@@ -14,7 +14,7 @@
 		{ name: "About the master", link: "/about-master" },
 		{ name: "Bazi Basics", link: "/bazi-basics" },
 		{ name: "Consultation", link: "/consultation" },
-		{ name: "Privacy policy", link: "/privacy-policy" },
+		{ name: "Privacy policy", link: "/privacy" },
 	];
 </script>
 

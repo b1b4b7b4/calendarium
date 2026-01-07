@@ -3,14 +3,15 @@
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import Rock from "$lib/assets/rock.svelte";
 	import Button from "$lib/components/Button.svelte";
+	import { m } from "$lib/paraglide/messages";
 
 	const menuItems = [
-		{ name: "Main", link: "/" },
-		{ name: "Calculator", link: "/calculator" },
-		{ name: "Calendar", link: "/calendar" },
-		{ name: "Compass", link: "/compass" },
-		{ name: "My clients", link: "/clients" },
-		{ name: "Consultation", link: "/consultation" },
+		{ name: m.Main(), link: "/" },
+		{ name: m.Calculator(), link: "/calculator" },
+		{ name: m.Calendar(), link: "/calendar" },
+		{ name: m.Compass(), link: "/compass" },
+		{ name: m.My_Clients(), link: "/clients" },
+		{ name: m.Consultations(), link: "/consultation" },
 	];
 
 	const logined = false;
