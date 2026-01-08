@@ -3,6 +3,7 @@
 </script>
 
 <section
+	id="about-master"
 	class="pt-[100px] pb-[120px] px-[40px] grid grid-cols-[auto_1fr_auto] container"
 >
 	<div class="relative w-[500px] h-96">

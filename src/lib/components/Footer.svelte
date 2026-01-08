@@ -10,10 +10,10 @@
 
 	const menuItems = [
 		{ name: "Main", link: "/" },
-		{ name: "About me", link: "/about" },
-		{ name: "About the master", link: "/about-master" },
-		{ name: "Bazi Basics", link: "/bazi-basics" },
-		{ name: "Consultation", link: "/consultation" },
+		{ name: "About me", link: "/#about-me" },
+		{ name: "About the master", link: "/#about-master" },
+		{ name: "Bazi Basics", link: "/#bazi-basics" },
+		{ name: "Consultation", link: "/#consultation" },
 		{ name: "Privacy policy", link: "/privacy" },
 	];
 </script>

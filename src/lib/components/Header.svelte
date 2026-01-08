@@ -12,7 +12,7 @@
 		{ name: m.Calendar(), link: "/calendar" },
 		{ name: m.Compass(), link: "/compass" },
 		{ name: m.My_Clients(), link: "/clients" },
-		{ name: m.Consultations(), link: "/consultation" },
+		{ name: m.Consultations(), link: "/#consultation" },
 	];
 
 	const logined = false;

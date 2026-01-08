@@ -1,4 +1,5 @@
 <section
+	id="hero"
 	class="min-h-[calc(100svh-80px)] relative flex flex-col gap-8 items-center justify-center px-4 py-16"
 	style="background-image: url('/bgs/image.png')"
 >

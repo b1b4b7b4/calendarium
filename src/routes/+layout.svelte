@@ -7,6 +7,7 @@
 	import Footer from "$lib/components/Footer.svelte";
 	import { onMount, setContext } from "svelte";
 	import { writable } from "svelte/store";
+	import { Toaster } from "svelte-french-toast";
 
 	let { children } = $props();
 
@@ -25,9 +26,15 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-<Header />
-{@render children()}
-<Footer />
+<Toaster position="bottom-right" />
+
+<div class="min-h-screen grid grid-rows-[auto_1fr_auto]">
+	<Header />
+	<div>
+		{@render children()}
+	</div>
+	<Footer />
+</div>
 
 <!-- <div> -->
 <!-- 	{#each locales as locale} -->

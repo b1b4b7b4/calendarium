@@ -2,7 +2,7 @@
 	import StarIcon from "$lib/assets/starIcon.svelte";
 </script>
 
-<div class="bg-stone-300">
+<div class="bg-stone-300" id="about-me">
 	<div class="container px-[40px] py-[70px] grid grid-cols-2 gap-[20px]">
 		<div>
 			<div

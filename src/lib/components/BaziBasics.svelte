@@ -5,7 +5,10 @@
 	import Button from "./Button.svelte";
 </script>
 
-<section class="container px-[40px] py-[100px] flex gap-[120px]">
+<section
+	class="container px-[40px] py-[100px] flex gap-[120px]"
+	id="bazi-basics"
+>
 	<div class="max-w-[294px]">
 		<div
 			class="min-h-24 rounded-tr-[500px] rounded-br-[500px] border-2 border-stone-900 flex items-center gap-[10px] justify-between pl-[20px] pr-[30px] mb-[186px]"
