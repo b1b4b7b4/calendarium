@@ -4,6 +4,7 @@
 	import Rock from "$lib/assets/rock.svelte";
 	import Button from "$lib/components/Button.svelte";
 	import { m } from "$lib/paraglide/messages";
+	import { getContext } from "svelte";
 
 	const menuItems = [
 		{ name: m.Main(), link: "/" },
@@ -15,6 +16,8 @@
 	];
 
 	const logined = false;
+
+	const currentSession = getContext("currentSession");
 </script>
 
 <div class="bg-stone-900">
@@ -43,7 +46,7 @@
 		</nav>
 
 		<div class="flex justify-end">
-			{#if !logined}
+			{#if !$currentSession.user}
 				<Button
 					onclick={() => goto("/login")}
 					hover
@@ -56,7 +59,7 @@
 					<div
 						class="justify-start text-white text-base font-normal font-['GT_Eesti_Pro_Display']"
 					>
-						Maghzum Ayash
+						{$currentSession.user.email}
 					</div>
 					<ArrowDownIcon />
 				</div>

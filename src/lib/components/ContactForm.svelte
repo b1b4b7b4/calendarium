@@ -1,5 +1,19 @@
 <script>
+	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import Button from "./Button.svelte";
+	import ReasonSelector from "./ReasonSelector.svelte";
+
+	const contactStatusInit = {
+		name: "",
+		email: "",
+		reason: "",
+		description: "",
+	};
+
+	const contactStatus = $state({
+		pending: false,
+		error: contactStatusInit,
+	});
 </script>
 
 <section class="bg-stone-300">
@@ -52,7 +66,7 @@
 					>
 						Сhoose the reason for the feedback
 					</div>
-					{@render field("text", "Сhoose the reason for the feedback", true)}
+					<ReasonSelector />
 				</div>
 
 				<div class="mb-[10px]">
@@ -63,12 +77,14 @@
 					</div>
 					<textarea
 						placeholder="Describe your situation in detail"
+						required
 						class=" px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:outline-orange-500 min-h-[133px]"
 					></textarea>
 				</div>
 
 				<div class="flex justify-end">
 					<Button
+						type="submit"
 						hover
 						c="text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] min-w-44 px-5 bg-orange-500 rounded-[43px] min-h-[39px]"
 					>
