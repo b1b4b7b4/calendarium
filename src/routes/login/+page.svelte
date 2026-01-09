@@ -34,6 +34,7 @@
 			}
 		} else if (res.data.success) {
 			loginState.mainError = await saveSession(res.data);
+			goto("/");
 		} else {
 			loginState.mainError =
 				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";

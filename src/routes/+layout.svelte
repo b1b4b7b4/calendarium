@@ -8,6 +8,7 @@
 	import { onMount, setContext } from "svelte";
 	import { writable } from "svelte/store";
 	import { Toaster } from "svelte-french-toast";
+	import { currentSession } from "$lib";
 
 	let { children } = $props();
 
@@ -19,9 +20,10 @@
 		phone_number: string;
 	};
 
-	type Session = { user?: User };
-	const currentSession = writable<Session>(page.data as any);
-	setContext("currentSession", currentSession);
+	currentSession.set(page.data as any);
+	$effect(() => {
+		currentSession.set(page.data as any);
+	});
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>

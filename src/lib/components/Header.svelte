@@ -1,6 +1,6 @@
 <script>
 	import { goto } from "$app/navigation";
-	import { settingsModal } from "$lib";
+	import { currentSession, removeSession, settingsModal } from "$lib";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
 	import CloseIcon from "$lib/assets/closeIcon.svelte";
@@ -9,6 +9,7 @@
 	import { m } from "$lib/paraglide/messages";
 	import clsx from "clsx";
 	import { getContext } from "svelte";
+	import toast from "svelte-french-toast";
 	import { bounceIn, bounceOut, cubicIn, cubicInOut } from "svelte/easing";
 	import { spring } from "svelte/motion";
 	import { fly, fade } from "svelte/transition";
@@ -21,8 +22,6 @@
 		{ name: m.My_Clients(), link: "/clients" },
 		{ name: m.Consultations(), link: "/#consultation" },
 	];
-
-	const currentSession = getContext("currentSession");
 </script>
 
 <div class="bg-stone-900">
@@ -200,6 +199,14 @@
 
 		<div in:fly={{ y: 10, opacity: 0, duration: 200, delay: 80 }}>
 			<Button
+				onclick={async () => {
+					const error = await removeSession();
+					if (error) {
+						toast.error("Error logging out. Please try again.");
+						return;
+					}
+					settingsModal.set(false);
+				}}
 				hover
 				c="px-4 py-4 bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-slate-500/5 text-red-500 text-base font-normal font-['GT_Eesti_Pro_Display'] flex justify-between items-center w-full"
 			>

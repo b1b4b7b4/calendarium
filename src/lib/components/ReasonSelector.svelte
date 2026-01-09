@@ -41,11 +41,11 @@
 	{#if active}
 		<div class="fixed inset-0 z-10" onclick={() => (active = false)}></div>
 		<div
-			in:fly={{ y: -10, duration: 300 }}
-			out:fly={{ y: -10, duration: 200 }}
+			in:fly={{ y: -10, opacity: 0, duration: 350 }}
+			out:fly={{ y: -10, opacity: 0, duration: 150 }}
 			class="absolute top-[calc(100%+10px)] shadow-2xl inset-x-0 grid p-4 bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:outline-orange-500 z-20"
 		>
-			{#each options as option, idx}
+			{#each options as option, idx (idx)}
 				<button
 					type="button"
 					class="text-left w-full cursor-pointer py-1"
