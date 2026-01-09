@@ -38,7 +38,7 @@
 			class="w-full max-w-96 py-[20px] bg-stone-900 rounded-tl-[20px] rounded-tr-[20px] px-[16px]"
 		>
 			<div class="flex items-center gap-[10px] mb-[20px]">
-				<div
+				<label
 					class="px-4 bg-stone-300 rounded-xl focus-within:ring-2 ring-orange-500 flex items-center gap-2 min-h-[50px]"
 				>
 					<SearchIcon />
@@ -47,7 +47,7 @@
 						type="text"
 						class="ring-0 border-0 bg-transparent text-stone-950 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0"
 					/>
-				</div>
+				</label>
 				{#if searchQuery.length > 0}
 					<div
 						in:slide={{ duration: 250, axis: "x" }}

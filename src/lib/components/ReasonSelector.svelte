@@ -21,7 +21,10 @@
 	<Button
 		type="button"
 		onclick={() => (active = !active)}
-		c="px-5 py-[16px] bg-white rounded-[10px] text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full flex justify-between items-center cursor-pointer"
+		c={clsx(
+			"px-5 py-[16px] bg-white rounded-[10px] text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full flex justify-between items-center cursor-pointer",
+			active && "ring-2 ring-orange-500",
+		)}
 	>
 		{#if selectedOption !== null}
 			<span>{selectedOption}</span>

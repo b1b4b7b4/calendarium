@@ -61,15 +61,6 @@
 					Consultation
 				</div>
 
-				{#snippet field(type = "", placeholder = "", name = "")}
-					<input
-						{type}
-						{placeholder}
-						required
-						class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:outline-orange-500"
-					/>
-				{/snippet}
-
 				<div class="grid-cols-2 grid gap-[10px] mb-[10px]">
 					<div>
 						<div
@@ -82,7 +73,7 @@
 							placeholder="Enter your name"
 							name="name"
 							required
-							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:outline-orange-500"
+							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500"
 						/>
 
 						{#if contactStatus.error.name}
@@ -106,7 +97,7 @@
 							placeholder="Enter your email"
 							name="email"
 							required
-							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:outline-orange-500"
+							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500"
 						/>
 
 						{#if contactStatus.error.email}
@@ -147,7 +138,7 @@
 						placeholder="Describe your situation in detail"
 						required
 						name="description"
-						class=" px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:outline-orange-500 min-h-[133px]"
+						class=" px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500 min-h-[133px]"
 					></textarea>
 
 					{#if contactStatus.error.description}
