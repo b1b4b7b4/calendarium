@@ -34,6 +34,8 @@
 				registerState.error = res.data;
 			}
 		} else if (res.data.success) {
+			registerState = { ...loginStateInit };
+			goto("/");
 		} else {
 			registerState.mainError =
 				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";

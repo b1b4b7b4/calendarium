@@ -34,7 +34,7 @@
 				active ? "rotate-180" : "rotate-0",
 			)}
 		>
-			<ArrowDownIcon />
+			<ArrowDownIcon c="fill-black" />
 		</div>
 	</Button>
 
@@ -45,7 +45,7 @@
 			out:fly={{ y: -10, duration: 200 }}
 			class="absolute top-[calc(100%+10px)] shadow-2xl inset-x-0 grid p-4 bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:outline-orange-500 z-20"
 		>
-			{#each options as option}
+			{#each options as option, idx}
 				<button
 					type="button"
 					class="text-left w-full cursor-pointer py-1"

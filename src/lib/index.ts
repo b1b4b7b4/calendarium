@@ -29,3 +29,4 @@ export async function removeSession() {
 }
 
 
+export const settingsModal = writable(false);

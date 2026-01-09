@@ -9,14 +9,23 @@
 
 	const resetPasswordStateInit = {
 		email: "",
+		code: "",
+		password: "",
+		confirm_password: "",
 	};
+
 	let step = $state(1);
+	let code = $state(Array(4).fill(""));
+	let email = $state("");
+	let password = $state("");
+	let confirm_password = $state("");
+
 	let resetPasswordState = $state({
 		pending: false,
 		error: { ...resetPasswordStateInit },
 		mainError: "",
 	});
-	async function resetPasswordRequest(data: typeof resetPasswordStateInit) {
+	async function sendResetCode(data: Partial<typeof resetPasswordStateInit>) {
 		resetPasswordState = {
 			error: resetPasswordStateInit,
 			pending: true,
@@ -45,6 +54,63 @@
 				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";
 		}
 	}
+
+	async function verifyResetCode(data: Partial<typeof resetPasswordStateInit>) {
+		resetPasswordState = {
+			error: resetPasswordStateInit,
+			pending: true,
+			mainError: "",
+		};
+
+		const res = await api.post("/user/verify_reset_code", data);
+		resetPasswordState.pending = false;
+
+		if (res.status !== 200) {
+			if (res.data.error) {
+				resetPasswordState.mainError = res.data.error;
+			} else {
+				resetPasswordState.error = res.data;
+			}
+		} else if (res.data.success) {
+			resetPasswordState = {
+				error: resetPasswordStateInit,
+				pending: false,
+				mainError: "",
+			};
+			step = 3;
+		} else {
+			resetPasswordState.mainError =
+				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";
+		}
+	}
+
+	async function resetPassword(data: Partial<typeof resetPasswordStateInit>) {
+		resetPasswordState = {
+			error: resetPasswordStateInit,
+			pending: true,
+			mainError: "",
+		};
+
+		const res = await api.post("/user/set_new_password", data);
+		resetPasswordState.pending = false;
+
+		if (res.status !== 200) {
+			if (res.data.error) {
+				resetPasswordState.mainError = res.data.error;
+			} else {
+				resetPasswordState.error = res.data;
+			}
+		} else if (res.data.success) {
+			resetPasswordState = {
+				error: resetPasswordStateInit,
+				pending: false,
+				mainError: "",
+			};
+		} else {
+			resetPasswordState.mainError =
+				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";
+		}
+	}
 </script>
 
 <section
@@ -56,11 +122,17 @@
 			e.preventDefault();
 			switch (step) {
 				case 1:
-					await resetPasswordRequest(
-						Object.fromEntries(
-							new FormData(e.target as HTMLFormElement),
-						) as typeof resetPasswordStateInit,
-					);
+					await sendResetCode({ email });
+					break;
+				case 2:
+					await verifyResetCode({ email, code: code.join("") });
+					break;
+				case 3:
+					await resetPassword({
+						email,
+						password,
+						confirm_password,
+					});
 					break;
 			}
 		}}
@@ -104,6 +176,7 @@
 					type="text"
 					placeholder="Введите почту"
 					name="email"
+					bind:value={email}
 					required
 					class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
 				/>
@@ -131,18 +204,125 @@
 				</Button>
 			</div>
 		{:else if step === 2}
-			<Button
-				disabled={resetPasswordState.pending}
-				type="submit"
-				hover
-				c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
-			>
-				{#if resetPasswordState.pending}
-					Отправка...
-				{:else}
-					Отправить
+			<div class="max-w-[358px] mx-auto">
+				<div
+					class="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
+				>
+					Подтвердите почту
+				</div>
+
+				<div class="grid grid-cols-4 gap-2.5 mb-[10px]">
+					{#each code as _, i}
+						<input
+							type="text"
+							class="w-20 h-16 bg-stone-300 rounded-[10px] placeholder:text-stone-400 text-3xl font-normal font-['GT_Eesti_Pro_Display'] focus:outline-orange-500 text-center"
+							required
+							bind:value={code[i]}
+							oninput={(e) => {
+								const input = e.target as HTMLInputElement;
+								if (input.value && i < code.length - 1) {
+									const nextInput =
+										input.nextElementSibling as HTMLInputElement;
+									nextInput.focus();
+								} else if (!input.value && i > 0) {
+									const prevInput =
+										input.previousElementSibling as HTMLInputElement;
+									prevInput.focus();
+								}
+							}}
+							maxlength="1"
+						/>
+					{/each}
+				</div>
+
+				{#if resetPasswordState.mainError}
+					<div
+						in:fade
+						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mb-[10px]"
+					>
+						{resetPasswordState.mainError}
+					</div>
 				{/if}
-			</Button>
+
+				<div
+					class="text-white text-sm font-normal font-['GT_Eesti_Pro_Display'] mb-[20px]"
+				>
+					Resend it after 00:59
+				</div>
+
+				<Button
+					disabled={resetPasswordState.pending}
+					type="submit"
+					hover
+					c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
+				>
+					{#if resetPasswordState.pending}
+						Отправка...
+					{:else}
+						Отправить
+					{/if}
+				</Button>
+			</div>
+		{:else if step === 3}
+			<div class="max-w-[358px] mx-auto grid gap-[20px]">
+				<input
+					type="password"
+					placeholder="Новый пароль"
+					name="password"
+					bind:value={password}
+					required
+					class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
+				/>
+
+				{#if resetPasswordState.error.password}
+					<div
+						in:fade
+						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']"
+					>
+						{resetPasswordState.error.password}
+					</div>
+				{/if}
+
+				<input
+					type="password"
+					placeholder="Повторите пароль"
+					name="password"
+					bind:value={confirm_password}
+					required
+					class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
+				/>
+
+				{#if resetPasswordState.error.confirm_password}
+					<div
+						in:fade
+						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']"
+					>
+						{resetPasswordState.error.confirm_password}
+					</div>
+				{/if}
+
+				{#if resetPasswordState.mainError}
+					<div
+						in:fade
+						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']"
+					>
+						{resetPasswordState.mainError}
+					</div>
+				{/if}
+
+				<Button
+					disabled={resetPasswordState.pending}
+					type="submit"
+					hover
+					c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
+				>
+					{#if resetPasswordState.pending}
+						Загрузка...
+					{:else}
+						Вход
+					{/if}
+				</Button>
+			</div>
 		{/if}
 	</form>
 </section>

@@ -1,11 +1,25 @@
 import { api } from "$lib";
 import type { ServerLoad } from "@sveltejs/kit";
+import { decode } from "jsonwebtoken"
 
 export const load: ServerLoad = async ({ cookies }) => {
-	const access = cookies.get("access");
-	const res = await api("/user");
-	console.log(res.data);
-	return {
-		user: res.data.id ? res.data : null
-	};
+	try {
+		const access = cookies.get("access");
+		const decodedData = decode(access || "", { complete: true });
+		const userId = (decodedData?.payload as any).user_id
+		const res = await api("/user/" + userId);
+		return {
+			userId,
+			user: res.data,
+			access
+		};
+	} catch (error) {
+		console.error("Error in +layout.server.ts load function:", error);
+		return {
+			userId: null,
+			user: null,
+			access: null
+		};
+	}
 }
+
