@@ -65,6 +65,14 @@ export async function removeSession() {
 	}
 }
 
+export function debounce(func: () => void, timeout = 300) {
+	let timer: NodeJS.Timeout;
+	return (...args: any) => {
+		clearTimeout(timer);
+		timer = setTimeout(() => { func.apply(this, args); }, timeout);
+	};
+}
+
 export const settingsModal = writable(false);
 export const asideModal = writable(false);
 

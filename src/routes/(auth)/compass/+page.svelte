@@ -1,13 +1,15 @@
 <script lang="ts">
+	import { debounce, locationSuggestionApi } from "$lib";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
 	import ImageIcon from "$lib/assets/imageIcon.svelte";
 	import PointerIcon from "$lib/assets/pointerIcon.svelte";
 	import SearchIcon from "$lib/assets/searchIcon.svelte";
 	import Button from "$lib/components/Button.svelte";
 	import Switcher from "$lib/components/Switcher.svelte";
-	import type { PhotonFeatureCollection } from "$lib/types";
+	import type { PhotonFeature, PhotonFeatureCollection } from "$lib/types";
 	import { clsx } from "clsx";
-	import { fly, slide } from "svelte/transition";
+	import toast from "svelte-french-toast";
+	import { fade, fly, slide } from "svelte/transition";
 
 	const compassItems = [
 		{ label: "Compass A", img: "compassA.png" },
@@ -37,8 +39,8 @@
 	let sidebarOpen = $state(true);
 
 	let searchState = $state({
-		query: "aa",
-		results: [] as PhotonFeatureCollection[],
+		query: "",
+		results: [] as PhotonFeature[],
 		pending: true,
 	});
 </script>
@@ -87,6 +89,23 @@
 					placeholder="Search"
 					class="placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] ring-0 border-0 outline-0 bg-transparent w-full p-0 m-0"
 					bind:value={searchState.query}
+					oninput={debounce(async () => {
+						try {
+							searchState.pending = true;
+							const res = await locationSuggestionApi({
+								params: {
+									q: searchState.query,
+								},
+							});
+							await new Promise((r) => setTimeout(r, 1000));
+							searchState.results = res.data.features;
+						} catch (e) {
+							toast.error("Error fetching location suggestions");
+							searchState.results = [];
+						} finally {
+							searchState.pending = false;
+						}
+					}, 300)}
 				/>
 
 				<Button hover c="">
@@ -173,7 +192,7 @@
 			<div
 				in:slide={{ duration: 300 }}
 				out:slide={{ duration: 200 }}
-				class="p-[20px]"
+				class="p-[20px] overflow-auto max-h-[800px]"
 			>
 				<div
 					class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
@@ -181,29 +200,68 @@
 					Search Results
 				</div>
 
-				<Button hover c="flex items-center gap-[14px] text-left w-full">
-					<div>
-						<SearchIcon c="text-orange-500" />
-					</div>
-					<div class="w-full">
+				{#if searchState.pending}
+					{#each Array(10) as _, idx (idx)}
 						<div
-							class="text-orange-500 text-sm font-normal font-['GT_Eesti_Pro_Display']"
+							in:fade|global={{ duration: 100, delay: idx * 30 }}
+							out:slide|global={{ duration: 100 }}
 						>
-							Улица Николай Гоголь, 1
-						</div>
-						<div
-							class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] flex justify-between items-center"
-						>
-							Москва, Байконыр район
-
-							<div
-								class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+							<Button
+								hover
+								c="flex items-center gap-[14px] text-left w-full py-[10px]"
 							>
-								12 км
-							</div>
+								<div>
+									<div class="bg-stone-400 animate-pulse w-6 h-6 rounded"></div>
+								</div>
+								<div class="w-full flex justify-between items-center">
+									<div
+										class="bg-stone-400 animate-pulse w-30 w-6 h-7 rounded"
+									></div>
+									<div class="bg-stone-400 animate-pulse w-6 h-4 rounded"></div>
+								</div>
+							</Button>
 						</div>
+					{/each}
+				{:else if searchState.results.length === 0}
+					<div
+						class="text-stone-900 text
+-base font-normal font-['GT_Eesti_Pro_Display']"
+					>
+						No results found.
 					</div>
-				</Button>
+				{:else}
+					{#each searchState.results as result, idx (result.properties.osm_id + result.properties.osm_value)}
+						<div in:fade|global={{ duration: 100, delay: idx * 33 }}>
+							<Button
+								hover
+								c="flex items-center gap-[14px] text-left w-full py-[10px]"
+							>
+								<div>
+									<SearchIcon c="text-orange-500" />
+								</div>
+								<div class="w-full">
+									<div
+										class="text-orange-500 text-sm font-normal font-['GT_Eesti_Pro_Display'] line-clamp-1 max-w-[300px]"
+									>
+										{result.properties.street ?? result.properties.city}
+									</div>
+									<div
+										class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] flex justify-between items-center"
+									>
+										<span class="max-w-[280px] line-clamp-2"
+											>{result.properties.name}</span
+										>
+										<div
+											class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+										>
+											{result.properties.osm_key}
+										</div>
+									</div>
+								</div>
+							</Button>
+						</div>
+					{/each}
+				{/if}
 			</div>
 		{/if}
 	</div>
