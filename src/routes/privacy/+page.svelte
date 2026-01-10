@@ -3,7 +3,7 @@
 	import { m } from "$lib/paraglide/messages";
 </script>
 
-<div class="bg-stone-300">
+<div class="bg-stone-30">
 	<div class="container max-w-[1236px] pt-[29px] pb-[100px]">
 		<div
 			class="justify-start text-orange-500 text-base font-normal font-['GT_Eesti_Pro_Display'] flex items-center gap-[6px] mb-[30px]"

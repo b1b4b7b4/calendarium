@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { api } from "$lib";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
@@ -6,6 +6,7 @@
 	import SearchIcon from "$lib/assets/searchIcon.svelte";
 	import SuperArrowRight from "$lib/assets/SuperArrowRight.svelte";
 	import Button from "$lib/components/Button.svelte";
+	import type { Client } from "$lib/types";
 	import { onMount } from "svelte";
 	import toast from "svelte-french-toast";
 	import { fade, fly, slide } from "svelte/transition";
@@ -13,7 +14,7 @@
 	let searchQuery = $state("");
 
 	let clientsState = $state({
-		clients: [],
+		clients: [] as Client[],
 		loading: true,
 	});
 
@@ -105,12 +106,12 @@
 								<div
 									class="text-orange-500 text-xs font-normal font-['GT_Eesti_Pro_Display'] mb-[3px]"
 								>
-									20.10.2002
+									{new Date(client.date_of_birth).toLocaleDateString("ru-RU")}
 								</div>
 								<div
 									class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display']"
 								>
-									Ayash Maghzym
+									{client.name}
 								</div>
 							</div>
 							<div>

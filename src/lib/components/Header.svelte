@@ -22,6 +22,14 @@
 		{ name: m.My_Clients(), link: "/clients" },
 		{ name: m.Consultations(), link: "/#consultation" },
 	];
+
+	const settingsItems = [
+		{ link: "/", name: "Our app" },
+		{ link: "/", name: "Facebook" },
+		{ link: "/", name: "Instagram" },
+		{ link: "/", name: "LinkedIn" },
+		{ link: "/privacy", name: "Privacy policy" },
+	];
 </script>
 
 <div class="bg-stone-900">
@@ -93,7 +101,7 @@
 	<div
 		in:fly={{ y: 20, duration: 200 }}
 		out:fly={{ y: 20, duration: 200 }}
-		class="fixed z-101 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-full max-w-96 bg-orange-100 rounded-xl p-[20px]"
+		class="fixed z-101 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-full max-w-96 bg-orange-100 rounded-xl p-[20px] hide-body-scroll max-h-[80vh] overflow-y-auto hide-scrollbar"
 	>
 		<div
 			class="text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display'] flex justify-between items-center"
@@ -149,7 +157,7 @@
 				<input
 					type="text"
 					class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0 m-0 bg-transparent outline-none w-full border-0 focus:ring-0"
-					value={$currentSession.user.phone}
+					value={$currentSession.user.phone_number}
 				/>
 			</label>
 
@@ -175,14 +183,13 @@
 			class="grid gap-[10px]"
 			in:fly={{ y: 10, opacity: 0, duration: 200, delay: 50 }}
 		>
-			<!-- Our app -->
-			<!-- Facebook -->
-			<!-- Instagram -->
-			<!-- LinkedIn -->
-			<!-- Privacy policy -->
-			{#each [{ name: "Our app" }, { name: "Facebook" }, { name: "Instagram" }, { name: "LinkedIn" }, { name: "Privacy policy" }] as item, idx}
+			{#each settingsItems as item, idx}
 				<div>
 					<Button
+						onclick={() => {
+							goto(item.link);
+							settingsModal.set(false);
+						}}
 						hover
 						c="px-4 py-4 bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-slate-500/5 text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] flex justify-between items-center w-full"
 					>

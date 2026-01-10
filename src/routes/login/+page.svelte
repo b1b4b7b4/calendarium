@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { page } from "$app/state";
 	import { api, saveSession } from "$lib";
 	import ProfileIcon from "$lib/assets/profileIcon.svelte";
 	import Button from "$lib/components/Button.svelte";
@@ -34,7 +35,7 @@
 			}
 		} else if (res.data.success) {
 			loginState.mainError = await saveSession(res.data);
-			goto("/");
+			goto(page.url.searchParams.get("redi") ?? "/");
 		} else {
 			loginState.mainError =
 				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";

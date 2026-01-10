@@ -360,9 +360,23 @@ body {
 	background-color: var(--color-orange-100);
 }
 
+body:has(.hide-body-scroll) {
+	overflow: hidden;
+}
+
+.hide-scrollbar {
+	-ms-overflow-style: none;  /* Internet Explorer 10+ */
+	scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar { 
+	display: none;  /* Safari and Chrome */
+}
+
 .container {
 	max-width: 1440px;
 	margin: auto;
+	padding-inline:40px;
 }
 
 * {

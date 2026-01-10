@@ -1,21 +1,14 @@
 import { goto, invalidateAll } from "$app/navigation";
 import axios from "axios";
 import { writable, get } from "svelte/store";
+import type { UserProfile } from "./types";
+import { apiUrl } from "./constants";
 
-type User = {
-	id: number;
-	first_name: string;
-	last_name: string;
-	email: string;
-	phone_number: string;
-};
-type Session = { user?: User, access?: string };
+type Session = { user?: UserProfile, access?: string };
 export const currentSession = writable<Session>({});
 
-const apiUrl = "http://217.146.67.92/api/v1";
 export const api = axios.create({
 	baseURL: apiUrl,
-	validateStatus: () => true,
 })
 
 api.interceptors.request.use((config) => {
@@ -25,6 +18,28 @@ api.interceptors.request.use((config) => {
 	}
 	return config;
 });
+
+api.interceptors.response.use(
+	(response) => response,
+	async (error) => {
+		if (error.response?.status === 401 && get(currentSession).access) {
+			try {
+				console.log("Access token expired, attempting to refresh...");
+				const res = await axios.patch('/');
+				const newAccess = res.data.access;
+				if (!newAccess) throw new Error("No new access token");
+				currentSession.update(x => {
+					return { ...x, access: newAccess };
+				})
+				return api(error.config);
+			} catch {
+				currentSession.set({});
+				goto('/login');
+			}
+		}
+		return Promise.reject(error);
+	}
+);
 
 export async function saveSession(res: any) {
 	const data = await axios.post("/", res, { validateStatus: () => true });
