@@ -20,9 +20,12 @@
 
 <div class="bg-stone-900">
 	<div
-		class="container min-h-[119px] grid items-center px-[40px] grid-cols-[1fr_auto_1fr] gap-[20px]"
+		class="container min-h-[119px] grid items-center px-[40px] grid-cols-[1fr_auto_1fr] gap-[20px] max-[950px]:grid-cols-[auto_1fr]"
 	>
-		<Button c="flex flex-col items-center" onclick={() => goto("/")}>
+		<Button
+			c="flex flex-col items-center max-[950px]:hidden"
+			onclick={() => goto("/")}
+		>
 			<div
 				class="text-center justify-start text-orange-100 text-3xl font-medium font-['GT_Eesti_Pro_Display'] leading-9"
 			>

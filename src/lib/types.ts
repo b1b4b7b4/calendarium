@@ -104,3 +104,40 @@ export interface UserProfileUpdate {
 	email: string;
 	phone_number: string;
 }
+
+// Photon API Types (GeoJSON-based for place search)
+export interface PhotonProperties {
+	osm_type: string; // e.g., "R", "W", "N"
+	osm_id: number;
+	osm_key: string; // e.g., "place", "leisure"
+	osm_value: string; // e.g., "city", "stadium"
+	type: string; // e.g., "city", "house"
+	countrycode: string; // e.g., "DE", "US"
+	name: string;
+	country: string;
+	extent?: [number, number, number, number]; // [minLng, minLat, maxLng, maxLat]
+	postcode?: string;
+	housenumber?: string;
+	city?: string;
+	district?: string;
+	locality?: string;
+	street?: string;
+	state?: string;
+	county?: string;
+}
+
+export interface PhotonGeometry {
+	type: "Point";
+	coordinates: [number, number]; // [lng, lat]
+}
+
+export interface PhotonFeature {
+	type: "Feature";
+	properties: PhotonProperties;
+	geometry: PhotonGeometry;
+}
+
+export interface PhotonFeatureCollection {
+	type: "FeatureCollection";
+	features: PhotonFeature[];
+}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { api } from "$lib";
+	import LoginField from "$lib/assets/LoginField.svelte";
 	import ProfileIcon from "$lib/assets/profileIcon.svelte";
 	import Button from "$lib/components/Button.svelte";
 	import clsx from "clsx";
@@ -26,89 +27,68 @@
 		mainError: "",
 	});
 	async function sendResetCode(data: Partial<typeof resetPasswordStateInit>) {
-		resetPasswordState = {
-			error: resetPasswordStateInit,
-			pending: true,
-			mainError: "",
-		};
-
-		const res = await api.post("/user/send_reset_code", data);
-		resetPasswordState.pending = false;
-
-		if (res.status !== 200) {
-			if (res.data.error) {
-				resetPasswordState.mainError = res.data.error;
-			} else {
-				resetPasswordState.error = res.data;
-			}
-		} else if (res.data.success) {
+		try {
 			resetPasswordState = {
 				error: resetPasswordStateInit,
-				pending: false,
+				pending: true,
 				mainError: "",
 			};
-			toast.success("Смс с кодом отправлено на вашу почту!");
+			const res = await api.post("/user/send_reset_code", data);
 			step = 2;
-		} else {
-			resetPasswordState.mainError =
-				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";
+			toast.success("Код отправлен на вашу почту");
+			resetPasswordState.pending = false;
+		} catch (e: any) {
+			if (e.response?.data?.error) {
+				resetPasswordState.mainError = e.response.data.error;
+			} else {
+				resetPasswordState.error = e.response?.data;
+			}
+		} finally {
+			resetPasswordState.pending = false;
 		}
 	}
 
 	async function verifyResetCode(data: Partial<typeof resetPasswordStateInit>) {
-		resetPasswordState = {
-			error: resetPasswordStateInit,
-			pending: true,
-			mainError: "",
-		};
-
-		const res = await api.post("/user/verify_reset_code", data);
-		resetPasswordState.pending = false;
-
-		if (res.status !== 200) {
-			if (res.data.error) {
-				resetPasswordState.mainError = res.data.error;
-			} else {
-				resetPasswordState.error = res.data;
-			}
-		} else if (res.data.success) {
+		try {
 			resetPasswordState = {
 				error: resetPasswordStateInit,
-				pending: false,
+				pending: true,
 				mainError: "",
 			};
+
+			const res = await api.post("/user/verify_reset_code", data);
+			resetPasswordState.pending = false;
 			step = 3;
-		} else {
-			resetPasswordState.mainError =
-				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";
+		} catch (e: any) {
+			if (e.response?.data?.error) {
+				resetPasswordState.mainError = e.response.data.error;
+			} else {
+				resetPasswordState.error = e.response?.data;
+			}
+		} finally {
+			resetPasswordState.pending = false;
 		}
 	}
 
 	async function resetPassword(data: Partial<typeof resetPasswordStateInit>) {
-		resetPasswordState = {
-			error: resetPasswordStateInit,
-			pending: true,
-			mainError: "",
-		};
-
-		const res = await api.post("/user/set_new_password", data);
-		resetPasswordState.pending = false;
-
-		if (res.status !== 200) {
-			if (res.data.error) {
-				resetPasswordState.mainError = res.data.error;
-			} else {
-				resetPasswordState.error = res.data;
-			}
-		} else if (res.data.success) {
+		try {
 			resetPasswordState = {
 				error: resetPasswordStateInit,
-				pending: false,
+				pending: true,
 				mainError: "",
 			};
-		} else {
-			resetPasswordState.mainError =
-				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";
+
+			const res = await api.post("/user/set_new_password", data);
+			resetPasswordState.pending = false;
+			goto("/login");
+		} catch (e: any) {
+			if (e.response?.data?.error) {
+				resetPasswordState.mainError = e.response.data.error;
+			} else {
+				resetPasswordState.error = e.response?.data;
+			}
+		} finally {
+			resetPasswordState.pending = false;
 		}
 	}
 </script>
@@ -172,13 +152,12 @@
 			</div>
 
 			<div class="grid gap-[20px] max-w-[358px] mx-auto mb-[16px]">
-				<input
+				<LoginField
 					type="text"
 					placeholder="Введите почту"
 					name="email"
 					bind:value={email}
 					required
-					class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
 				/>
 
 				{#if resetPasswordState.mainError}
@@ -215,7 +194,7 @@
 					{#each code as _, i}
 						<input
 							type="text"
-							class="w-20 h-16 bg-stone-300 rounded-[10px] placeholder:text-stone-400 text-3xl font-normal font-['GT_Eesti_Pro_Display'] focus:outline-orange-500 text-center"
+							class="w-20 h-16 bg-stone-300 rounded-[10px] placeholder:text-stone-400 text-3xl font-normal font-['GT_Eesti_Pro_Display'] focus:outline-orange-500 text-center border-0 outline-none ring-2 ring-transparent focus:ring-orange-500"
 							required
 							bind:value={code[i]}
 							oninput={(e) => {

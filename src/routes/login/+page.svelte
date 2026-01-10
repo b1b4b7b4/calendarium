@@ -2,6 +2,7 @@
 	import { goto } from "$app/navigation";
 	import { page } from "$app/state";
 	import { api, saveSession } from "$lib";
+	import LoginField from "$lib/assets/LoginField.svelte";
 	import ProfileIcon from "$lib/assets/profileIcon.svelte";
 	import Button from "$lib/components/Button.svelte";
 	import axios from "axios";
@@ -87,11 +88,10 @@
 		</div>
 
 		<div class="grid gap-[20px] max-w-[358px] mx-auto mb-[16px]">
-			<input
+			<LoginField
 				type="text"
 				placeholder="Электронная почта"
 				name="email"
-				class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
 				required
 			/>
 			{#if loginState.error.email}
@@ -100,11 +100,10 @@
 				</div>
 			{/if}
 
-			<input
+			<LoginField
 				type="password"
 				placeholder="Пароль"
 				name="password"
-				class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
 				required
 			/>
 			{#if loginState.error.password}

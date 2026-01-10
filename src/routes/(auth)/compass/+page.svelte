@@ -1,0 +1,210 @@
+<script lang="ts">
+	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
+	import ImageIcon from "$lib/assets/imageIcon.svelte";
+	import PointerIcon from "$lib/assets/pointerIcon.svelte";
+	import SearchIcon from "$lib/assets/searchIcon.svelte";
+	import Button from "$lib/components/Button.svelte";
+	import Switcher from "$lib/components/Switcher.svelte";
+	import type { PhotonFeatureCollection } from "$lib/types";
+	import { clsx } from "clsx";
+	import { fly, slide } from "svelte/transition";
+
+	const compassItems = [
+		{ label: "Compass A", img: "compassA.png" },
+		{ label: "Compass B", img: "compassB.png" },
+		{ label: "Compass C", img: "compassC.png" },
+	];
+	let selectedCompass = $state(0);
+
+	const settingsItems = $state([
+		{
+			label: "Setting 1",
+			desc: "Description for setting 1",
+			state: true,
+		},
+		{
+			label: "Setting 2",
+			desc: "Description for setting 2",
+			state: false,
+		},
+		{
+			label: "Setting 3",
+			desc: "Description for setting 3",
+			state: true,
+		},
+	]);
+
+	let sidebarOpen = $state(true);
+
+	let searchState = $state({
+		query: "aa",
+		results: [] as PhotonFeatureCollection[],
+		pending: true,
+	});
+</script>
+
+{#if !sidebarOpen}
+	<div
+		in:fly={{ x: -300, duration: 300 }}
+		out:fly={{ x: -300, duration: 300 }}
+		class="fixed left-0 top-[100px]"
+	>
+		<Button
+			onclick={() => (sidebarOpen = true)}
+			hover
+			c=" w-12 h-12 bg-orange-500 rounded-tr-[10px] rounded-br-[10px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] flex items-center justify-center"
+		>
+			<div class="rotate-180 text-white">
+				<ArrowLeftIcon />
+			</div>
+		</Button>
+	</div>
+{:else}
+	<div
+		in:fly={{ x: -300, duration: 300 }}
+		out:fly={{ x: -300, duration: 300 }}
+		class="fixed left-0 top-[100px] h-[934px] bg-stone-300 rounded-tr-[10px] rounded-br-[10px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] min-w-[400px]"
+	>
+		<div class="p-[20px]">
+			<div
+				class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px] flex justify-between items-center"
+			>
+				Compass
+
+				<Button hover onclick={() => (sidebarOpen = false)} c="">
+					<ArrowLeftIcon />
+				</Button>
+			</div>
+
+			<label
+				class="focus-within:ring-2 ring-orange-500 w-full min-h-12 px-3.5 py-2 bg-white rounded-[10px] flex items-center gap-[10px]"
+			>
+				<Button hover c="">
+					<PointerIcon />
+				</Button>
+				<input
+					type="text"
+					placeholder="Search"
+					class="placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] ring-0 border-0 outline-0 bg-transparent w-full p-0 m-0"
+					bind:value={searchState.query}
+				/>
+
+				<Button hover c="">
+					<SearchIcon />
+				</Button>
+			</label>
+		</div>
+
+		<div class="w-full h-[1px] bg-stone-50"></div>
+
+		{#if !searchState.query}
+			<div in:slide={{ duration: 300 }} out:slide={{ duration: 200 }}>
+				<div class="p-[20px]">
+					<div
+						class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
+					>
+						Settings
+					</div>
+
+					<div class="grid gap-[10px]">
+						{#each settingsItems as item}
+							<label class="flex justify-between items-center cursor-pointer">
+								<div>
+									<div
+										class="self-stretch justify-start text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+									>
+										{item.label}
+									</div>
+									<div
+										class="self-stretch justify-start text-orange-300 text-sm font-normal font-['GT_Eesti_Pro_Display']"
+									>
+										{item.desc}
+									</div>
+								</div>
+
+								<Switcher bind:active={item.state} />
+							</label>
+						{/each}
+					</div>
+				</div>
+
+				<div class="w-full h-[1px] bg-stone-50"></div>
+
+				<div class="p-[20px]">
+					<div
+						class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
+					>
+						Choose a compass
+					</div>
+
+					<div class="flex gap-[10px]">
+						{#each compassItems as item, idx}
+							<Button
+								onclick={() => (selectedCompass = idx)}
+								hover
+								c={clsx(
+									"w-28 h-28 relative rounded-xl  overflow-hidden p-1",
+									selectedCompass === idx && "ring ring-2 ring-orange-500",
+								)}
+							>
+								<img
+									class="w-full h-full left-[4px] rounded-xl pointer-events-none"
+									src="https://placehold.co/106x106"
+									alt={item.label}
+								/>
+							</Button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="w-full h-[1px] bg-stone-50"></div>
+
+				<div class="flex justify-center py-[20px]">
+					<Button
+						hover
+						c="px-5 py-2.5 bg-orange-500 rounded-[43px] w-fit text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] flex items-center gap-[10px]"
+					>
+						<ImageIcon />
+						Add a photo
+					</Button>
+				</div>
+			</div>
+		{:else}
+			<div
+				in:slide={{ duration: 300 }}
+				out:slide={{ duration: 200 }}
+				class="p-[20px]"
+			>
+				<div
+					class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
+				>
+					Search Results
+				</div>
+
+				<Button hover c="flex items-center gap-[14px] text-left w-full">
+					<div>
+						<SearchIcon c="text-orange-500" />
+					</div>
+					<div class="w-full">
+						<div
+							class="text-orange-500 text-sm font-normal font-['GT_Eesti_Pro_Display']"
+						>
+							Улица Николай Гоголь, 1
+						</div>
+						<div
+							class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] flex justify-between items-center"
+						>
+							Москва, Байконыр район
+
+							<div
+								class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+							>
+								12 км
+							</div>
+						</div>
+					</div>
+				</Button>
+			</div>
+		{/if}
+	</div>
+{/if}

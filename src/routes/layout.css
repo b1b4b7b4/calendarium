@@ -381,6 +381,10 @@ body:has(.hide-body-scroll) {
 
 * {
 	user-select: none;
+	webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	box-sizing: border-box;
 }
+
 

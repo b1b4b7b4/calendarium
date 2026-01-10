@@ -26,7 +26,10 @@
 	});
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
+<svelte:head>
+	<link rel="icon" href={favicon} />
+	<title>Bazi App</title>
+</svelte:head>
 
 <Toaster position="bottom-right" />
 

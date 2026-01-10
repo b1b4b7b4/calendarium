@@ -4,12 +4,18 @@
 	import Button from "./Button.svelte";
 	import { clsx } from "clsx";
 
-	const options = ["option 1", "option 2", "option 3"];
-	let selectedOption = $state<string | null>(null);
+	let {
+		options = ["option 1", "option 2", "option 3"],
+		placeholder = "Choose the reason for the feedback",
+		selectedOption = $bindable(null),
+	} = $props();
+
+	// let selectedOption = $state<string | null>(null);
 	let active = $state(false);
+	let dropdown: HTMLDivElement;
 </script>
 
-<div class="relative">
+<div class="relative" bind:this={dropdown}>
 	<input
 		type="text"
 		required
@@ -29,7 +35,7 @@
 		{#if selectedOption !== null}
 			<span>{selectedOption}</span>
 		{:else}
-			<span class="text-orange-300">Choose the reason for the feedback</span>
+			<span class="text-orange-300">{placeholder}</span>
 		{/if}
 		<div
 			class={clsx(
@@ -42,7 +48,6 @@
 	</Button>
 
 	{#if active}
-		<div class="fixed inset-0 z-10" onclick={() => (active = false)}></div>
 		<div
 			in:fly={{ y: -10, opacity: 0, duration: 350 }}
 			out:fly={{ y: -10, opacity: 0, duration: 150 }}
@@ -61,3 +66,11 @@
 		</div>
 	{/if}
 </div>
+
+<svelte:body
+	onclick={(e) => {
+		if (dropdown && !dropdown.contains(e.target as Node)) {
+			active = false;
+		}
+	}}
+/>

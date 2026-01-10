@@ -11,6 +11,10 @@ export const api = axios.create({
 	baseURL: apiUrl,
 })
 
+export const locationSuggestionApi = axios.create({
+	baseURL: "https://photon.komoot.io/api",
+})
+
 api.interceptors.request.use((config) => {
 	const token = get(currentSession).access;
 	if (token) {
@@ -62,4 +66,5 @@ export async function removeSession() {
 }
 
 export const settingsModal = writable(false);
+export const asideModal = writable(false);
 

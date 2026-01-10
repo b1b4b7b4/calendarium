@@ -36,7 +36,7 @@
 >
 	<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px]">
 		<div
-			class="w-full max-w-96 py-[20px] bg-stone-900 rounded-tl-[20px] rounded-tr-[20px] px-[16px]"
+			class="w-full max-w-96 py-[20px] bg-stone-900 rounded-tl-[20px] rounded-tr-[20px] px-[16px] min-h-[358px]"
 		>
 			<div class="flex items-center gap-[10px] mb-[20px]">
 				<label

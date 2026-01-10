@@ -1,6 +1,11 @@
 <script>
 	import { goto } from "$app/navigation";
-	import { currentSession, removeSession, settingsModal } from "$lib";
+	import {
+		currentSession,
+		removeSession,
+		settingsModal,
+		asideModal,
+	} from "$lib";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
 	import CloseIcon from "$lib/assets/closeIcon.svelte";
@@ -11,7 +16,6 @@
 	import { getContext } from "svelte";
 	import toast from "svelte-french-toast";
 	import { bounceIn, bounceOut, cubicIn, cubicInOut } from "svelte/easing";
-	import { spring } from "svelte/motion";
 	import { fly, fade } from "svelte/transition";
 
 	const menuItems = [
@@ -34,9 +38,12 @@
 
 <div class="bg-stone-900">
 	<div
-		class="container min-h-[80px] grid items-center px-[40px] grid-cols-[1fr_auto_1fr] gap-[20px]"
+		class="container min-h-[80px] grid items-center px-[40px] grid-cols-[1fr_auto_1fr] gap-[20px] max-[850px]:grid-cols-[auto_1fr]"
 	>
-		<Button c="flex items-center gap-[10px]" onclick={() => goto("/")}>
+		<Button
+			c="flex items-center gap-[10px] max-[850px]:hidden"
+			onclick={() => goto("/")}
+		>
 			<Rock />
 			<div
 				class="text-center justify-start text-orange-100 text-3xl font-medium font-['GT_Eesti_Pro_Display'] leading-9"
@@ -91,12 +98,12 @@
 </div>
 
 {#if $settingsModal && $currentSession.user}
-	<div in:fade out:fade class="fixed inset-0 z-100">
-		<div
-			onclick={() => settingsModal.set(false)}
-			class="bg-black/30 backdrop-blur-blur absolute inset-0"
-		></div>
-	</div>
+	<div
+		in:fade
+		out:fade
+		onclick={() => settingsModal.set(false)}
+		class="fixed inset-0 z-100 bg-black/30 backdrop-blur-blur"
+	></div>
 
 	<div
 		in:fly={{ y: 20, duration: 200 }}

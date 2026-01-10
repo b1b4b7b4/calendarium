@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { api } from "$lib";
+	import LoginField from "$lib/assets/LoginField.svelte";
 	import ProfileIcon from "$lib/assets/profileIcon.svelte";
 	import Button from "$lib/components/Button.svelte";
 	import clsx from "clsx";
@@ -87,13 +88,7 @@
 		</div>
 
 		<div class="grid gap-[20px] max-w-[358px] mx-auto mb-[16px]">
-			<input
-				type="text"
-				placeholder="Эл. почта"
-				name="email"
-				required
-				class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
-			/>
+			<LoginField type="text" placeholder="Эл. почта" name="email" required />
 
 			{#if registerState.error.email}
 				<div in:fade class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']">
@@ -101,12 +96,11 @@
 				</div>
 			{/if}
 
-			<input
+			<LoginField
 				type="password"
 				placeholder="Пароль"
 				name="password"
 				required
-				class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
 			/>
 
 			{#if registerState.error.password}
@@ -115,12 +109,11 @@
 				</div>
 			{/if}
 
-			<input
+			<LoginField
 				type="password"
 				placeholder="Повторите пароль"
 				name="confirmPassword"
 				required
-				class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
 			/>
 
 			{#if registerState.error.confirm_password}
@@ -130,7 +123,11 @@
 			{/if}
 
 			<label class="grid grid-cols-[auto_1fr] gap-[20px] cursor-pointer">
-				<input type="checkbox" class="mt-1 checked:bg-orange-500" required />
+				<input
+					type="checkbox"
+					class="mt-1 checked:bg-orange-500 ring-0"
+					required
+				/>
 				<span
 					class="text-white text-base font-normal font-['GT_Eesti_Pro_Display'] [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]"
 				>
