@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
-	import { fade, fly } from "svelte/transition";
+	import { fade, fly, slide } from "svelte/transition";
 	import Button from "./Button.svelte";
 	import { clsx } from "clsx";
 
@@ -55,6 +55,7 @@
 		>
 			{#each options as option, idx (idx)}
 				<button
+					transition:fade|global={{ duration: 250, delay: idx * 35 }}
 					type="button"
 					class="text-left w-full cursor-pointer py-1"
 					onclick={() => {

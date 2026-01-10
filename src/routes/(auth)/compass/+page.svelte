@@ -13,27 +13,22 @@
 	import { fade, fly, slide } from "svelte/transition";
 
 	const compassItems = [
-		{ label: "Compass A", img: "compassA.png" },
-		{ label: "Compass B", img: "compassB.png" },
-		{ label: "Compass C", img: "compassC.png" },
+		{ label: "Compass A", img: "composi/compos1.png" },
+		// { label: "Compass B", img: "https://placehold.co/106x106" },
+		// { label: "Compass C", img: "https://placehold.co/106x106" },
 	];
 	let selectedCompass = $state(0);
 
 	const settingsItems = $state([
 		{
-			label: "Setting 1",
-			desc: "Description for setting 1",
-			state: true,
-		},
-		{
-			label: "Setting 2",
-			desc: "Description for setting 2",
+			label: "Show Compass",
+			desc: "Toggle the visibility of the compass on the map",
 			state: false,
 		},
 		{
-			label: "Setting 3",
-			desc: "Description for setting 3",
-			state: true,
+			label: "Enable Compass Interaction",
+			desc: "Allow users to interact with the compass",
+			state: false,
 		},
 	]);
 
@@ -44,6 +39,31 @@
 		results: [] as PhotonFeature[],
 		pending: true,
 	});
+
+	let position = $state({
+		x: window.innerWidth / 2,
+		y: window.innerHeight / 2,
+	});
+	let isDragging = $state(false);
+	let dragOffset = $state({ x: 0, y: 0 });
+	function handleMouseDown(e) {
+		if (!settingsItems[1].state) return;
+		isDragging = true;
+		dragOffset.x = e.clientX - position.x;
+		dragOffset.y = e.clientY - position.y;
+		window.addEventListener("mousemove", handleMouseMove);
+		window.addEventListener("mouseup", handleMouseUp);
+	}
+	function handleMouseMove(e) {
+		if (!isDragging) return;
+		position.x = e.clientX - dragOffset.x;
+		position.y = e.clientY - dragOffset.y;
+	}
+	function handleMouseUp() {
+		isDragging = false;
+		window.removeEventListener("mousemove", handleMouseMove);
+		window.removeEventListener("mouseup", handleMouseUp);
+	}
 </script>
 
 <div class="w-full flex">
@@ -169,7 +189,7 @@
 								>
 									<img
 										class="w-full h-full left-[4px] rounded-xl pointer-events-none"
-										src="https://placehold.co/106x106"
+										src={item.img}
 										alt={item.label}
 									/>
 								</Button>
@@ -279,6 +299,25 @@
 	{/if}
 
 	<div class="flex-1 w-full h-[calc(100svh-100px)]">
+		{#if compassItems[selectedCompass] && settingsItems[0].state}
+			<button
+				transition:fly={{ y: 10, duration: 500 }}
+				onmousedown={handleMouseDown}
+				class={clsx(
+					"fixed z-500",
+					!settingsItems[1].state && "pointer-events-none",
+					"w-[500px] h-[500px]",
+				)}
+				style="left:{position.x}px; top:{position.y}px; transform:translate(-50%, -50%);"
+			>
+				<img
+					src={compassItems[selectedCompass].img}
+					alt={compassItems[selectedCompass].label}
+					class="rounded-xl pointer-events-none select-none user-select-none"
+				/>
+			</button>
+		{/if}
+
 		<Map />
 	</div>
 </div>

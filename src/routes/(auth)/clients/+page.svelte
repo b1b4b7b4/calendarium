@@ -17,8 +17,9 @@
 		clients: [] as Client[],
 		loading: true,
 	});
+	let selectedClient: Client | null = $state(null);
 
-	onMount(async () => {
+	async function fetchClients() {
 		const res = await api("/client");
 		await new Promise((r) => setTimeout(r, 1000));
 		clientsState.loading = false;
@@ -27,6 +28,10 @@
 		} else {
 			clientsState.clients = res.data;
 		}
+	}
+
+	onMount(async () => {
+		await fetchClients();
 	});
 </script>
 
@@ -34,7 +39,7 @@
 	class="min-h-[calc(100svh-80px)] relative flex items-start justify-center pt-[40px] px-4"
 	style="background: url('bgs/image.png') no-repeat center/cover"
 >
-	<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px]">
+	<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px] flex">
 		<div
 			class="w-full max-w-96 py-[20px] bg-stone-900 rounded-tl-[20px] rounded-tr-[20px] px-[16px] min-h-[358px]"
 		>
@@ -69,23 +74,27 @@
 					class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mt-2 grid gap-[10px]"
 				>
 					{#each Array(3) as _, idx (idx)}
-						<Button
-							hover
-							c="border-b border-orange-100 py-[6px] flex items-center justify-between w-full text-left"
-						>
-							<div class="min-w-[50%]">
-								<div
-									class="text-orange-500 text-xs font-normal font-['GT_Eesti_Pro_Display'] mb-[3px]"
-								>
+						<div out:slide|global class="w-full">
+							<Button
+								hover
+								c="border-b border-orange-100 py-[6px] flex items-center justify-between w-full text-left"
+							>
+								<div class="min-w-[50%]">
 									<div
-										class="bg-stone-300 opacity-10 animate-pulse min-h-3 rounded"
+										class="text-orange-500 text-xs font-normal font-['GT_Eesti_Pro_Display'] mb-[3px]"
+									>
+										<div
+											class="bg-stone-300 opacity-10 animate-pulse min-h-3 rounded"
+										></div>
+									</div>
+								</div>
+								<div>
+									<div
+										class="bg-stone-200 opacity-10 animate-pulse h-3 w-3 rounded"
 									></div>
 								</div>
-							</div>
-							<div>
-								<SuperArrowRight />
-							</div>
-						</Button>
+							</Button>
+						</div>
 					{/each}
 				</div>
 			{:else if clientsState.clients.length === 0}
@@ -95,32 +104,49 @@
 				>
 					Клиенты не найдены
 				</div>
-			{:else if searchQuery.length > 0}
+			{:else}
 				<div class="grid gap-[10px]">
 					{#each clientsState.clients as client, idx (idx)}
-						<Button
-							hover
-							c="border-b border-orange-100 py-[6px] flex items-center justify-between w-full text-left"
-						>
-							<div>
-								<div
-									class="text-orange-500 text-xs font-normal font-['GT_Eesti_Pro_Display'] mb-[3px]"
+						{#if client.name.includes(searchQuery)}
+							<div
+								in:slide|global={{ delay: idx * 33 }}
+								out:fade|global={{ duration: 100 }}
+							>
+								<Button
+									onclick={() => (selectedClient = client)}
+									hover
+									c="border-b border-orange-100 py-[6px] flex items-center justify-between w-full text-left"
 								>
-									{new Date(client.date_of_birth).toLocaleDateString("ru-RU")}
-								</div>
-								<div
-									class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display']"
-								>
-									{client.name}
-								</div>
+									<div>
+										<div
+											class="text-orange-500 text-xs font-normal font-['GT_Eesti_Pro_Display'] mb-[3px]"
+										>
+											{new Date(client.date_of_birth).toLocaleDateString(
+												"ru-RU",
+											)}
+										</div>
+										<div
+											class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display']"
+										>
+											{client.name}
+										</div>
+									</div>
+									<div>
+										<SuperArrowRight />
+									</div>
+								</Button>
 							</div>
-							<div>
-								<SuperArrowRight />
-							</div>
-						</Button>
+						{/if}
 					{/each}
 				</div>
 			{/if}
 		</div>
+
+		{#if selectedClient}
+			<div
+				transition:slide={{ axis: "x", duration: 300 }}
+				class="min-w-[649px] p-[20px] bg-stone-900 rounded-t-[20px] mt-2"
+			></div>
+		{/if}
 	</div>
 </section>
