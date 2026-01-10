@@ -76,3 +76,7 @@ export function debounce(func: () => void, timeout = 300) {
 export const settingsModal = writable(false);
 export const asideModal = writable(false);
 
+export const selectedMapCoords = writable<{ lat: number; lon: number }>({
+	lat: 51.505,
+	lon: -0.09,
+});
