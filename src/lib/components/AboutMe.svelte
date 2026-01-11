@@ -1,5 +1,7 @@
 <script>
 	import StarIcon from "$lib/assets/starIcon.svelte";
+	import image1 from "$lib/assets/images/aboutme/image1.png";
+	import image2 from "$lib/assets/images/aboutme/image2.png";
 </script>
 
 <div class="bg-stone-300 overflow-hidden" id="about-me">
@@ -44,13 +46,15 @@
 
 		<div>
 			<div class="w-[670px] h-[500px] relative">
-				<img
+				<enhanced:img
 					class="w-[500px] h-[500px] left-[170px] top-0 absolute rounded-full"
-					src="/aboutme/image2.png"
+					src={image2}
+					alt="Portrait of Benson Yeo"
 				/>
-				<img
+				<enhanced:img
 					class="h-[500px] left-0 top-0 absolute"
-					src="/aboutme/image1.png"
+					src={image1}
+					alt="About me background"
 				/>
 			</div>
 		</div>

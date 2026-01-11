@@ -29,6 +29,7 @@
 	"dependencies": {
 		"@imask/svelte": "^7.6.1",
 		"@lucide/svelte": "^0.562.0",
+		"@sveltejs/enhanced-img": "^0.9.2",
 		"axios": "^1.13.2",
 		"clsx": "^2.1.1",
 		"jsonwebtoken": "^9.0.3",

@@ -11,9 +11,10 @@
 	import { clsx } from "clsx";
 	import toast from "svelte-french-toast";
 	import { fade, fly, slide } from "svelte/transition";
+	import compos1 from "$lib/assets/images/composi/compos1.png";
 
 	const compassItems = [
-		{ label: "Compass A", img: "composi/compos1.png" },
+		{ label: "Compass A", img: compos1 },
 		// { label: "Compass B", img: "https://placehold.co/106x106" },
 		// { label: "Compass C", img: "https://placehold.co/106x106" },
 	];
@@ -187,7 +188,7 @@
 										selectedCompass === idx && "ring ring-2 ring-orange-500",
 									)}
 								>
-									<img
+									<enhanced:img
 										class="w-full h-full left-[4px] rounded-xl pointer-events-none"
 										src={item.img}
 										alt={item.label}
@@ -310,7 +311,7 @@
 				)}
 				style="left:{position.x}px; top:{position.y}px; transform:translate(-50%, -50%);"
 			>
-				<img
+				<enhanced:img
 					src={compassItems[selectedCompass].img}
 					alt={compassItems[selectedCompass].label}
 					class="rounded-xl pointer-events-none select-none user-select-none"

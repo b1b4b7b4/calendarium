@@ -2,6 +2,7 @@
 	import AppStoreIcon from "$lib/assets/appStoreIcon.svelte";
 	import GooglePlayIcon from "$lib/assets/googlePlayIcon.svelte";
 	import Button from "./Button.svelte";
+	import iPhone16Pro from "$lib/assets/images/iPhone 16 Pro.png";
 </script>
 
 <section class="bg-orange-100">
@@ -48,8 +49,8 @@
 			<div
 				class="absolute inset-0 bg-[radial-gradient(ellipse_156.30%_156.30%_at_50.00%_50.00%,_rgba(255,_119.33,_35,_0.21)_0%,_rgba(30,_19,_5,_0.21)_100%)] rounded-[30px] blur-[20px]"
 			></div>
-			<img
-				src="/iPhone 16 Pro.png"
+			<enhanced:img
+				src={iPhone16Pro}
 				class="pointer-events-none relative z-10"
 				alt=""
 			/>

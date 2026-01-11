@@ -1,5 +1,6 @@
 <script>
 	import StarIcon from "$lib/assets/starIcon.svelte";
+	import image3 from "$lib/assets/images/image 3.png";
 </script>
 
 <section
@@ -20,9 +21,9 @@
 	<div
 		class="relative w-[500px] h-96 max-[1200px]:w-full max-[800px]:mb-[100px]"
 	>
-		<img
+		<enhanced:img
 			class="absolute inset-0 h-full top-[25px] left-[25px] rounded-[10px] object-cover z-10 max-[1200px]:object-left max-[800px]:w-full"
-			src="/image 3.png"
+			src={image3}
 			alt=""
 		/>
 		<div

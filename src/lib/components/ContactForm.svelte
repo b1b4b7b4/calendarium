@@ -4,7 +4,8 @@
 	import { fade } from "svelte/transition";
 	import Button from "./Button.svelte";
 	import ReasonSelector from "./ReasonSelector.svelte";
-	import toast from "svelte-french-toast";
+		import toast from "svelte-french-toast";
+	import consultation from "$lib/assets/images/consultation.png";
 
 	const contactStatusInit = {
 		name: "",
@@ -43,8 +44,8 @@
 
 <section class="bg-stone-300" id="consultation">
 	<div class="grid grid-cols-2 max-[1000px]:grid-cols-1">
-		<img
-			src="/consultation.png"
+		<enhanced:img
+			src={consultation}
 			alt=""
 			class="w-full h-full object-cover max-[1000px]:hidden"
 		/>
