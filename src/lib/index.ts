@@ -2,14 +2,14 @@ import { goto, invalidateAll } from "$app/navigation";
 import axios from "axios";
 import { writable, get } from "svelte/store";
 import type { UserProfile } from "./types";
-import { apiUrl } from "./constants";
+import { apiUrl, proxyUrl } from "./constants";
 import toast from "svelte-french-toast";
 
 type Session = { user?: UserProfile, access?: string };
 export const currentSession = writable<Session>({});
 
 export const api = axios.create({
-	baseURL: apiUrl,
+	baseURL: proxyUrl,
 })
 
 export const locationSuggestionApi = axios.create({

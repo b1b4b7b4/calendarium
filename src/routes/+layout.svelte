@@ -28,9 +28,6 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<link rel="preload" as="image" href="/bgs/image.png" />
-	<link rel="preload" as="image" href="/bgs/image1.png" />
-	<link rel="preload" as="image" href="/bgs/image3.png" />
 	<title>Bazi App</title>
 </svelte:head>
 
