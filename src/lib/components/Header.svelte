@@ -1,4 +1,5 @@
 <script>
+	import { Menu, MenuSquare } from "@lucide/svelte";
 	import { goto } from "$app/navigation";
 	import {
 		currentSession,
@@ -16,7 +17,7 @@
 	import { getContext } from "svelte";
 	import toast from "svelte-french-toast";
 	import { bounceIn, bounceOut, cubicIn, cubicInOut } from "svelte/easing";
-	import { fly, fade } from "svelte/transition";
+	import { fly, fade, slide } from "svelte/transition";
 
 	const menuItems = [
 		{ name: m.Main(), link: "/" },
@@ -52,11 +53,17 @@
 			</div>
 		</Button>
 
-		<nav class="flex items-center gap-[20px] justify-center">
-			{#each menuItems as item}
+		<Button
+			onclick={() => asideModal.update((x) => !x)}
+			c="min-[750px]:hidden"
+			hover><Menu class="text-orange-100" /></Button
+		>
+
+		<nav class="flex items-center gap-[20px] justify-center max-[750px]:hidden">
+			{#each menuItems as item, idx}
 				<Button
 					hover
-					c="justify-start text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display']"
+					c="justify-start text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] text-nowrap "
 					onclick={() => goto(item.link)}
 				>
 					{item.name}
@@ -69,7 +76,7 @@
 				<Button
 					onclick={() => goto("/login")}
 					hover
-					c="justify-start text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] px-5 rounded-[43px] outline outline-2 outline-offset-[-2px] outline-orange-100 w-full max-w-[130px] min-h-[39px]"
+					c="justify-start text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] px-5 rounded-[43px] outline outline-2 outline-offset-[-2px] outline-orange-100 w-full max-w-[130px] min-h-[39px]  text-nowrap "
 				>
 					Log in
 				</Button>
@@ -230,5 +237,52 @@
 				</div>
 			</Button>
 		</div>
+	</div>
+{/if}
+
+{#if $asideModal}
+	<div
+		transition:fade={{ duration: 300 }}
+		onclick={() => asideModal.set(false)}
+		class="fixed inset-0 z-100 bg-black/30 backdrop-blur-blur"
+	></div>
+
+	<div
+		transition:fly={{ x: -200, duration: 500 }}
+		class="fixed z-101 left-0 top-0 w-[250px] h-full bg-orange-100 p-[20px] hide-body-scroll flex flex-col"
+	>
+		<div
+			class="text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display'] flex justify-between items-center mb-[20px]"
+		>
+			Menu
+			<Button hover c="" onclick={() => asideModal.set(false)}>
+				<CloseIcon />
+			</Button>
+		</div>
+
+		<nav class="flex flex-col gap-[15px]">
+			{#each menuItems as item, idx}
+				<div
+					class="w-full"
+					transition:fly|global={{
+						x: -20,
+						opacity: 0,
+						duration: 300,
+						delay: 33 * idx + 100,
+					}}
+				>
+					<Button
+						hover
+						c="justify-start text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] text-nowrap "
+						onclick={() => {
+							goto(item.link);
+							asideModal.set(false);
+						}}
+					>
+						{item.name}
+					</Button>
+				</div>
+			{/each}
+		</nav>
 	</div>
 {/if}

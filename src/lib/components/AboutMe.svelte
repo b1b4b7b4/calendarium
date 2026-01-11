@@ -2,8 +2,10 @@
 	import StarIcon from "$lib/assets/starIcon.svelte";
 </script>
 
-<div class="bg-stone-300" id="about-me">
-	<div class="container px-[40px] py-[70px] grid grid-cols-2 gap-[20px]">
+<div class="bg-stone-300 overflow-hidden" id="about-me">
+	<div
+		class="container px-[40px] py-[70px] grid grid-cols-2 gap-[20px] max-[900px]:grid-cols-1"
+	>
 		<div>
 			<div
 				class="flex gap-[30px] w-fit mb-[30px] pl-[30px] pr-[41px] rounded-tr-[500px] rounded-br-[500px] border-2 border-stone-900 min-h-[90px] items-center"
@@ -16,7 +18,7 @@
 			</div>
 
 			<div
-				class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] mb-[40px]"
+				class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] mb-[40px] max-[600px]:text-5xl max-[600px]:leading-[45px] grid gap-1"
 			>
 				Something that inspires me
 				<span class="text-orange-500">every day</span>

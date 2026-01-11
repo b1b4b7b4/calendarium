@@ -20,7 +20,7 @@
 
 <div class="bg-stone-900">
 	<div
-		class="container min-h-[119px] grid items-center px-[40px] grid-cols-[1fr_auto_1fr] gap-[20px] max-[950px]:grid-cols-[auto_1fr]"
+		class="container min-h-[119px] grid items-center px-[40px] grid-cols-[1fr_auto_1fr] gap-[20px] max-[950px]:grid-cols-[auto_1fr] max-[850px]:grid-cols-1 max-[850px]:py-5 max-[850px]:place-items-center"
 	>
 		<Button
 			c="flex flex-col items-center max-[950px]:hidden"
@@ -34,11 +34,13 @@
 			<div class="w-7 h-0.5 bg-orange-500 rounded-[3px]" />
 		</Button>
 
-		<nav class="flex items-center gap-[20px] justify-center">
+		<nav
+			class="flex items-center gap-[20px] justify-center max-[850px]:flex-wrap"
+		>
 			{#each menuItems as item}
 				<Button
 					hover
-					c="justify-start text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display']"
+					c="text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] text-nowrap "
 					onclick={() => goto(item.link)}
 				>
 					{item.name}
@@ -49,7 +51,7 @@
 		{#snippet socialBtn(icon: any)}
 			<Button
 				hover
-				c="w-full max-w-7 min-h-7 rounded-full border border-orange-100 flex items-center justify-center"
+				c="p-1 rounded-full border border-orange-100 flex items-center justify-center"
 			>
 				{@render icon()}
 			</Button>

@@ -4,11 +4,24 @@
 
 <section
 	id="about-master"
-	class="pt-[100px] pb-[120px] px-[40px] grid grid-cols-[auto_1fr_auto] container"
+	class="pt-[100px] pb-[120px] px-[40px] grid grid-cols-[auto_1fr_auto] container max-[1200px]:grid-cols-2 max-[800px]:grid-cols-1 overflow-hidden"
 >
-	<div class="relative w-[500px] h-96">
+	<div
+		class="min-h-[90px] px-[20px] flex items-center gap-[10px] rounded-tr-[500px] rounded-br-[500px] border-2 border-stone-900 min-[800px]:hidden w-fit mb-[30px]"
+	>
+		<div
+			class="justify-start text-stone-900 text-2xl font-bold font-['GT_Eesti_Pro_Display']"
+		>
+			About the master
+		</div>
+		<StarIcon />
+	</div>
+
+	<div
+		class="relative w-[500px] h-96 max-[1200px]:w-full max-[800px]:mb-[100px]"
+	>
 		<img
-			class="absolute inset-0 h-full top-[25px] left-[25px] rounded-[10px] object-cover z-10"
+			class="absolute inset-0 h-full top-[25px] left-[25px] rounded-[10px] object-cover z-10 max-[1200px]:object-left max-[800px]:w-full"
 			src="/image 3.png"
 			alt=""
 		/>
@@ -17,9 +30,9 @@
 		></div>
 	</div>
 
-	<div class="ml-[53px]">
+	<div class="ml-[53px] max-[800px]:ml-0">
 		<div
-			class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] grid gap-1"
+			class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] grid gap-1 max-[600px]:text-5xl max-[600px]:leading-[45px]"
 		>
 			<span class="mb-1">About Master</span>
 			<span class="text-orange-500"> Benson Yeo </span>
@@ -44,7 +57,7 @@
 
 	<div>
 		<div
-			class="min-h-[90px] px-[20px] flex items-center gap-[10px] rounded-tl-[500px] rounded-bl-[500px] border-2 border-stone-900"
+			class="min-h-[90px] px-[20px] flex items-center gap-[10px] rounded-tl-[500px] rounded-bl-[500px] border-2 border-stone-900 max-[1200px]:hidden"
 		>
 			<div
 				class="justify-start text-stone-900 text-2xl font-bold font-['GT_Eesti_Pro_Display']"

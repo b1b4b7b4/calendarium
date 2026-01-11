@@ -4,7 +4,7 @@
 	style="background-image: url('/bgs/image.png')"
 >
 	<div
-		class="text-center justify-start text-orange-100 text-[160px] font-black font-['GT_Eesti_Pro_Display'] leading-[144px]"
+		class="text-center justify-start text-orange-100 text-[160px] font-black font-['GT_Eesti_Pro_Display'] leading-[144px] max-[600px]:text-[80px] max-[600px]:leading-[72px]"
 	>
 		Sound<br />Heaven
 	</div>

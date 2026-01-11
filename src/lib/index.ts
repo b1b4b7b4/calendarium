@@ -3,6 +3,7 @@ import axios from "axios";
 import { writable, get } from "svelte/store";
 import type { UserProfile } from "./types";
 import { apiUrl } from "./constants";
+import toast from "svelte-french-toast";
 
 type Session = { user?: UserProfile, access?: string };
 export const currentSession = writable<Session>({});
@@ -40,6 +41,9 @@ api.interceptors.response.use(
 				currentSession.set({});
 				goto('/login');
 			}
+		} else if (error.response?.status === 500) {
+			toast.error("Внутренняя ошибка сервера. Пожалуйста, попробуйте еще раз позже.");
+			toast.error(error.response.data.slice(0, 100) || "Неизвестная ошибка.");
 		}
 		return Promise.reject(error);
 	}

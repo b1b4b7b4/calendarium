@@ -42,9 +42,13 @@
 </script>
 
 <section class="bg-stone-300" id="consultation">
-	<div class="grid grid-cols-2">
-		<img src="/consultation.png" alt="" class="w-full object-cover" />
-		<div class="px-[60px] flex flex-col justify-center">
+	<div class="grid grid-cols-2 max-[1000px]:grid-cols-1">
+		<img
+			src="/consultation.png"
+			alt=""
+			class="w-full h-full object-cover max-[1000px]:hidden"
+		/>
+		<div class="p-[60px] flex flex-col justify-center">
 			<form
 				onsubmit={async (e) => {
 					e.preventDefault();
@@ -56,7 +60,7 @@
 				}}
 			>
 				<div
-					class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] mb-[50px]"
+					class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] mb-[50px] max-[600px]:text-5xl max-[600px]:leading-[45px]"
 				>
 					Consultation
 				</div>
