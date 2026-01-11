@@ -7,7 +7,7 @@
 	import Button from "$lib/components/Button.svelte";
 	import axios from "axios";
 	import clsx from "clsx";
-	import { fade } from "svelte/transition";
+	import { fade, slide } from "svelte/transition";
 
 	type LoginData = {
 		email: string;
@@ -24,25 +24,19 @@
 	};
 	let loginState = $state(loginStateInit);
 	async function loginRequest(data: LoginData) {
-		loginState = { ...loginStateInit, pending: true };
-		const res = await api.post("/user/login", data);
-		loginState.pending = false;
-
-		if (res.status !== 200) {
-			if (res.data.error) {
-				loginState.mainError = res.data.error;
+		try {
+			loginState = { ...loginStateInit, pending: true };
+			const res = await api.post("/user/login", data);
+			loginState.pending = false;
+		} catch (e: any) {
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				loginState.mainError = e.response.data.error || e.response.data.detail;
 			} else {
-				loginState.error = res.data;
+				loginState.error = e.response?.data;
 			}
-		} else if (res.data.success) {
-			loginState.mainError = await saveSession(res.data);
-			goto(page.url.searchParams.get("redi") ?? "/");
-		} else {
-			loginState.mainError =
-				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";
+		} finally {
+			loginState.pending = false;
 		}
-
-		return res.data;
 	}
 </script>
 
@@ -92,25 +86,17 @@
 				type="text"
 				placeholder="Электронная почта"
 				name="email"
+				bind:err={loginState.error.email}
 				required
 			/>
-			{#if loginState.error.email}
-				<div in:fade class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']">
-					{loginState.error.email}
-				</div>
-			{/if}
 
 			<LoginField
 				type="password"
 				placeholder="Пароль"
 				name="password"
+				bind:err={loginState.error.password}
 				required
 			/>
-			{#if loginState.error.password}
-				<div in:fade class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']">
-					{loginState.error.password}
-				</div>
-			{/if}
 
 			<Button
 				disabled={loginState.pending}
@@ -128,7 +114,7 @@
 
 		{#if loginState.mainError}
 			<div
-				in:fade
+				transition:slide
 				class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mb-4 text-center"
 			>
 				{loginState.mainError}

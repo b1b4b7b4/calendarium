@@ -49,8 +49,9 @@
 			const res = await api.post("/calculator", data);
 			toast.success("Data saved successfully!");
 		} catch (e: any) {
-			if (e.response?.data?.error) {
-				calculatorState.mainError = e.response.data.error;
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				calculatorState.mainError =
+					e.response.data.error || e.response.data.detail;
 			} else {
 				calculatorState.error = e.response?.data;
 			}

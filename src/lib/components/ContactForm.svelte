@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { api } from "$lib";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
-	import { fade } from "svelte/transition";
+	import { fade, slide } from "svelte/transition";
 	import Button from "./Button.svelte";
 	import ReasonSelector from "./ReasonSelector.svelte";
-		import toast from "svelte-french-toast";
+	import toast from "svelte-french-toast";
 	import consultation from "$lib/assets/images/consultation.png";
 
 	const contactStatusInit = {
@@ -14,30 +14,31 @@
 		description: "",
 	};
 
-	const contactStatus = $state({
+	let contactStatus = $state({
 		pending: false,
 		error: contactStatusInit,
 		mainError: "",
 	});
 
 	async function createConsultation(data: typeof contactStatusInit) {
-		contactStatus.error = contactStatusInit;
-		contactStatus.mainError = "";
-		contactStatus.pending = true;
-		const res = await api.post("/consultation", data);
-		contactStatus.pending = false;
-
-		if (res.status !== 200) {
-			if (res.data.error) {
-				contactStatus.error = res.data.error;
-			} else {
-				contactStatus.error = res.data;
-			}
-		} else if (res.data.success) {
-			contactStatus.error = contactStatusInit;
+		try {
+			contactStatus = {
+				mainError: "",
+				pending: true,
+				error: contactStatusInit,
+			};
+			const res = await api.post("/consultation", data);
+			contactStatus.pending = false;
 			toast.success("Consultation request sent successfully!");
-		} else {
-			contactStatus.mainError = "Unknown error. Please try again.";
+		} catch (e: any) {
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				contactStatus.mainError =
+					e.response.data.error || e.response.data.detail;
+			} else {
+				contactStatus.error = e.response?.data;
+			}
+		} finally {
+			contactStatus.pending = false;
 		}
 	}
 </script>
@@ -83,7 +84,7 @@
 
 						{#if contactStatus.error.name}
 							<div
-								in:fade
+								transition:slide
 								class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
 							>
 								{contactStatus.error.name}
@@ -107,7 +108,7 @@
 
 						{#if contactStatus.error.email}
 							<div
-								in:fade
+								transition:slide
 								class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
 							>
 								{contactStatus.error.email}
@@ -125,7 +126,7 @@
 					<ReasonSelector />
 					{#if contactStatus.error.reason}
 						<div
-							in:fade
+							transition:slide
 							class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
 						>
 							{contactStatus.error.reason}
@@ -148,7 +149,7 @@
 
 					{#if contactStatus.error.description}
 						<div
-							in:fade
+							transition:slide
 							class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
 						>
 							{contactStatus.error.description}

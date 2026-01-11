@@ -6,7 +6,7 @@
 	import Button from "$lib/components/Button.svelte";
 	import clsx from "clsx";
 	import toast from "svelte-french-toast";
-	import { fade } from "svelte/transition";
+	import { fade, slide } from "svelte/transition";
 
 	const resetPasswordStateInit = {
 		email: "",
@@ -38,8 +38,9 @@
 			toast.success("Код отправлен на вашу почту");
 			resetPasswordState.pending = false;
 		} catch (e: any) {
-			if (e.response?.data?.error) {
-				resetPasswordState.mainError = e.response.data.error;
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				resetPasswordState.mainError =
+					e.response.data.error || e.response.data.detail;
 			} else {
 				resetPasswordState.error = e.response?.data;
 			}
@@ -60,8 +61,9 @@
 			resetPasswordState.pending = false;
 			step = 3;
 		} catch (e: any) {
-			if (e.response?.data?.error) {
-				resetPasswordState.mainError = e.response.data.error;
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				resetPasswordState.mainError =
+					e.response.data.error || e.response.data.detail;
 			} else {
 				resetPasswordState.error = e.response?.data;
 			}
@@ -82,8 +84,9 @@
 			resetPasswordState.pending = false;
 			goto("/login");
 		} catch (e: any) {
-			if (e.response?.data?.error) {
-				resetPasswordState.mainError = e.response.data.error;
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				resetPasswordState.mainError =
+					e.response.data.error || e.response.data.detail;
 			} else {
 				resetPasswordState.error = e.response?.data;
 			}
@@ -157,12 +160,13 @@
 					placeholder="Введите почту"
 					name="email"
 					bind:value={email}
+					bind:err={resetPasswordState.error.email}
 					required
 				/>
 
 				{#if resetPasswordState.mainError}
 					<div
-						in:fade
+						transition:slide
 						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']"
 					>
 						{resetPasswordState.mainError}
@@ -216,7 +220,7 @@
 
 				{#if resetPasswordState.mainError}
 					<div
-						in:fade
+						transition:slide
 						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mb-[10px]"
 					>
 						{resetPasswordState.mainError}
@@ -244,45 +248,27 @@
 			</div>
 		{:else if step === 3}
 			<div class="max-w-[358px] mx-auto grid gap-[20px]">
-				<input
+				<LoginField
 					type="password"
 					placeholder="Новый пароль"
 					name="password"
 					bind:value={password}
+					bind:err={resetPasswordState.error.password}
 					required
-					class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
 				/>
 
-				{#if resetPasswordState.error.password}
-					<div
-						in:fade
-						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']"
-					>
-						{resetPasswordState.error.password}
-					</div>
-				{/if}
-
-				<input
+				<LoginField
 					type="password"
 					placeholder="Повторите пароль"
-					name="password"
+					name="confirm_password"
 					bind:value={confirm_password}
+					bind:err={resetPasswordState.error.confirm_password}
 					required
-					class="text-white bg-transparent placeholder:text-white text-xl font-medium font-['GT_Eesti_Pro_Display'] leading-5 px-5 min-h-[52px] rounded-xl outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-start items-center gap-2.5 focus:outline-orange-500"
 				/>
-
-				{#if resetPasswordState.error.confirm_password}
-					<div
-						in:fade
-						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']"
-					>
-						{resetPasswordState.error.confirm_password}
-					</div>
-				{/if}
 
 				{#if resetPasswordState.mainError}
 					<div
-						in:fade
+						transition:slide
 						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']"
 					>
 						{resetPasswordState.mainError}

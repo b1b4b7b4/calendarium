@@ -5,7 +5,7 @@
 	import ProfileIcon from "$lib/assets/profileIcon.svelte";
 	import Button from "$lib/components/Button.svelte";
 	import clsx from "clsx";
-	import { fade } from "svelte/transition";
+	import { fade, slide } from "svelte/transition";
 
 	type RegisterData = {
 		email: string;
@@ -24,25 +24,20 @@
 	};
 	let registerState = $state(loginStateInit);
 	async function registerRequest(data: RegisterData) {
-		registerState = { ...loginStateInit, pending: true };
-		const res = await api.post("/user/register", data);
-		registerState.pending = false;
-
-		if (res.status !== 200) {
-			if (res.data.error) {
-				registerState.mainError = res.data.error;
+		try {
+			registerState = { ...loginStateInit, pending: true };
+			const res = await api.post("/user/register", data);
+			registerState.pending = false;
+		} catch (e: any) {
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				registerState.mainError =
+					e.response.data.error || e.response.data.detail;
 			} else {
-				registerState.error = res.data;
+				registerState.error = e.response?.data;
 			}
-		} else if (res.data.success) {
-			registerState = { ...loginStateInit };
-			goto("/");
-		} else {
-			registerState.mainError =
-				"Неизвестная ошибка. Пожалуйста, попробуйте еще раз.";
+		} finally {
+			registerState.pending = false;
 		}
-
-		return res.data;
 	}
 </script>
 
@@ -88,39 +83,29 @@
 		</div>
 
 		<div class="grid gap-[20px] max-w-[358px] mx-auto mb-[16px]">
-			<LoginField type="text" placeholder="Эл. почта" name="email" required />
-
-			{#if registerState.error.email}
-				<div in:fade class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']">
-					{registerState.error.email}
-				</div>
-			{/if}
+			<LoginField
+				type="text"
+				placeholder="Эл. почта"
+				name="email"
+				bind:err={registerState.error.email}
+				required
+			/>
 
 			<LoginField
 				type="password"
 				placeholder="Пароль"
 				name="password"
+				bind:err={registerState.error.password}
 				required
 			/>
-
-			{#if registerState.error.password}
-				<div in:fade class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']">
-					{registerState.error.password}
-				</div>
-			{/if}
 
 			<LoginField
 				type="password"
 				placeholder="Повторите пароль"
 				name="confirmPassword"
+				bind:err={registerState.error.confirm_password}
 				required
 			/>
-
-			{#if registerState.error.confirm_password}
-				<div in:fade class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']">
-					{registerState.error.confirm_password}
-				</div>
-			{/if}
 
 			<label class="grid grid-cols-[auto_1fr] gap-[20px] cursor-pointer">
 				<input
@@ -151,7 +136,7 @@
 
 		{#if registerState.mainError}
 			<div
-				in:fade
+				transition:slide
 				class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mb-4 text-center"
 			>
 				{registerState.mainError}
