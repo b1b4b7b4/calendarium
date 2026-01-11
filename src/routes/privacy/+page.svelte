@@ -14,13 +14,13 @@
 		</div>
 
 		<div
-			class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] mb-[40px]"
+			class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] mb-[40px] max-[600px]:text-5xl max-[600px]:leading-[45px]"
 		>
 			{m.Privacy_Policy()}
 		</div>
 
 		<div
-			class="self-stretch justify-start text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+			class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
 		>
 			{@html m.privacy_policy_text()}
 		</div>

@@ -10,9 +10,18 @@
 	const contactStatusInit = {
 		name: "",
 		email: "",
-		reason: "",
+		reason: "" as string | number,
 		description: "",
 	};
+
+	const contactStates = $state(contactStatusInit);
+	const reasons = [
+		"General Inquiry",
+		"Technical Support",
+		"Billing",
+		"Feedback",
+		"Other",
+	];
 
 	let contactStatus = $state({
 		pending: false,
@@ -54,11 +63,12 @@
 			<form
 				onsubmit={async (e) => {
 					e.preventDefault();
-					await createConsultation(
-						Object.fromEntries(
-							new FormData(e.target as HTMLFormElement),
-						) as typeof contactStatusInit,
-					);
+					await createConsultation({
+						name: contactStates.name,
+						email: contactStates.email,
+						reason: reasons.indexOf(contactStates.reason),
+						description: contactStates.description,
+					});
 				}}
 			>
 				<div
@@ -77,7 +87,7 @@
 						<input
 							type="text"
 							placeholder="Enter your name"
-							name="name"
+							bind:value={contactStates.name}
 							required
 							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500"
 						/>
@@ -101,7 +111,7 @@
 						<input
 							type="text"
 							placeholder="Enter your email"
-							name="email"
+							bind:value={contactStates.email}
 							required
 							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500"
 						/>
@@ -123,7 +133,10 @@
 					>
 						Сhoose the reason for the feedback
 					</div>
-					<ReasonSelector />
+					<ReasonSelector
+						options={reasons}
+						selectedOption={contactStates.reason}
+					/>
 					{#if contactStatus.error.reason}
 						<div
 							transition:slide
@@ -143,7 +156,7 @@
 					<textarea
 						placeholder="Describe your situation in detail"
 						required
-						name="description"
+						bind:value={contactStates.description}
 						class=" px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500 min-h-[133px]"
 					></textarea>
 

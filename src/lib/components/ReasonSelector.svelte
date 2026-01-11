@@ -32,7 +32,7 @@
 			active && "ring-2 ring-orange-500",
 		)}
 	>
-		{#if selectedOption !== null}
+		{#if selectedOption}
 			<span>{selectedOption}</span>
 		{:else}
 			<span class="text-orange-300">{placeholder}</span>
