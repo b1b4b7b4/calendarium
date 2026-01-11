@@ -6,6 +6,11 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1"
 		/>
+	<meta
+		http-equiv="Content-Security-Policy"
+		content="block-all-mixed-content 'none'; upgrade-insecure-requests"
+	/>
+	<meta http-equiv="Content-Security-Policy" content="block-all-mixed-content 'none'">
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
