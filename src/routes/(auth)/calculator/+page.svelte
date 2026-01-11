@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { api } from "$lib";
+	import { m } from "$lib/paraglide/messages";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
 	import ArrowRightIcon from "$lib/assets/arrowRightIcon.svelte";
@@ -31,7 +32,7 @@
 		mainError: "",
 	});
 
-	let gender = $state("Male");
+	let gender = $state(m.male());
 	const dates = $state({
 		hours: "",
 		days: "",
@@ -47,7 +48,7 @@
 				error: calculatorStateInit,
 			};
 			const res = await api.post("/calculator", data);
-			toast.success("Data saved successfully!");
+			toast.success(m.calculator_save_success_toast());
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				calculatorState.mainError =
@@ -83,7 +84,7 @@
 				<div
 					class="w-96 justify-start text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display']"
 				>
-					Personal info:
+					{m.calculator_personal_info()}
 				</div>
 				<Button hover c="">
 					<EditIcon />
@@ -91,26 +92,26 @@
 			</div>
 
 			<div class="mb-[20px]">
-				<ReasonSelector options={["Male", "Female"]} selectedOption={gender} />
+				<ReasonSelector options={[m.male(), m.female()]} selectedOption={gender} />
 			</div>
 
 			<div class="flex gap-[8px] items-center mb-[16px]">
 				<DateField
 					match="00:00"
-					title="Hour"
+					title={m.calculator_hour_title()}
 					bind:value={dates.hours}
 					required
 				/>
-				<DateField match="00" title="Day" bind:value={dates.days} required />
+				<DateField match="00" title={m.calculator_day_title()} bind:value={dates.days} required />
 				<DateField
 					match="00"
-					title="Month"
+					title={m.calculator_month_title()}
 					bind:value={dates.months}
 					required
 				/>
 				<DateField
 					match="0000"
-					title="Year"
+					title={m.calculator_year_title()}
 					bind:value={dates.years}
 					required
 				/>
@@ -124,9 +125,9 @@
 					c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
 				>
 					{#if calculatorState.pending}
-						Saving...
+						{m.calculator_saving()}
 					{:else}
-						Save
+						{m.calculator_save()}
 					{/if}
 				</Button>
 			</div>
@@ -144,7 +145,7 @@
 				<div
 					class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
 				>
-					Share:
+					{m.calculator_share()}
 				</div>
 
 				<Button hover c=""><ShareIcon /></Button>

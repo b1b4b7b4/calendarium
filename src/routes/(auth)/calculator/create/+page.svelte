@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { api } from "$lib";
+	import { m } from "$lib/paraglide/messages";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
 	import ArrowRightIcon from "$lib/assets/arrowRightIcon.svelte";
@@ -62,7 +63,7 @@
 				error: calculatorStateInit,
 			};
 			const res = await api.post("/client", data);
-			toast.success("Data saved successfully!");
+			toast.success(m.calculator_data_saved_toast());
 		} catch (e: any) {
 			if (e.response?.data?.error) {
 				calculatorState.mainError = e.response.data.error;
@@ -95,7 +96,7 @@
 				<div
 					class="w-96 justify-start text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display']"
 				>
-					Personal info:
+					{m.calculator_personal_info()}
 				</div>
 				<Button hover c="">
 					<EditIcon />
@@ -103,26 +104,26 @@
 			</div>
 
 			<div class="mb-[20px]">
-				<ReasonSelector options={["male", "female"]} selectedOption={gender} />
+				<ReasonSelector options={[m.male(), m.female()]} selectedOption={gender} />
 			</div>
 
 			<div class="flex gap-[8px] items-center mb-[16px]">
 				<DateField
 					match="00:00"
-					title="Hour"
+					title={m.hour_title()}
 					bind:value={dates.hours}
 					required
 				/>
-				<DateField match="00" title="Day" bind:value={dates.days} required />
+				<DateField match="00" 				title={m.day_title()} bind:value={dates.days} required />
 				<DateField
 					match="00"
-					title="Month"
+					title={m.month_title()}
 					bind:value={dates.months}
 					required
 				/>
 				<DateField
 					match="0000"
-					title="Year"
+					title={m.year_title()}
 					bind:value={dates.years}
 					required
 				/>
@@ -132,7 +133,7 @@
 				type="text"
 				bind:value={infoFields.name}
 				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
-				placeholder="Name"
+				placeholder={m.name_placeholder()}
 				required
 			/>
 
@@ -140,7 +141,7 @@
 				type="text"
 				bind:value={infoFields.email}
 				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
-				placeholder="Email"
+				placeholder={m.create_email_placeholder()}
 				required
 			/>
 			<input
@@ -148,14 +149,14 @@
 				use:imask={{ mask: "+00000000000", lazy: true }}
 				bind:value={infoFields.phone_number}
 				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
-				placeholder="Phone"
+				placeholder={m.create_phone_placeholder()}
 				required
 			/>
 			<input
 				type="text"
 				bind:value={infoFields.address}
 				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
-				placeholder="Address"
+				placeholder={m.create_address_placeholder()}
 				required
 			/>
 
@@ -163,7 +164,7 @@
 				type="text"
 				bind:value={infoFields.country}
 				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
-				placeholder="Country"
+				placeholder={m.create_country_placeholder()}
 				required
 			/>
 
@@ -171,7 +172,7 @@
 				type="text"
 				bind:value={infoFields.remark}
 				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
-				placeholder="Remarks"
+				placeholder={m.create_remarks_placeholder()}
 				required
 			/>
 
@@ -183,9 +184,9 @@
 					c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
 				>
 					{#if calculatorState.pending}
-						Saving...
+						{m.calculator_saving()}
 					{:else}
-						Save
+						{m.calculator_save()}
 					{/if}
 				</Button>
 			</div>
@@ -203,7 +204,7 @@
 				<div
 					class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
 				>
-					Share:
+					{m.calculator_share()}
 				</div>
 
 				<Button hover c=""><ShareIcon /></Button>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { m } from "$lib/paraglide/messages";
 	import { api } from "$lib";
 	import LoginField from "$lib/assets/LoginField.svelte";
 	import ProfileIcon from "$lib/assets/profileIcon.svelte";
@@ -7,6 +8,8 @@
 	import clsx from "clsx";
 	import toast from "svelte-french-toast";
 	import { fade, slide } from "svelte/transition";
+	import { localizeHref } from "$lib/paraglide/runtime";
+	import image1 from "$lib/assets/images/bgs/image1.png";
 
 	const resetPasswordStateInit = {
 		email: "",
@@ -35,7 +38,7 @@
 			};
 			const res = await api.post("/user/send_reset_code", data);
 			step = 2;
-			toast.success("Код отправлен на вашу почту");
+			toast.success(m.forgot_code_sent_toast());
 			resetPasswordState.pending = false;
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
@@ -82,7 +85,7 @@
 
 			const res = await api.post("/user/set_new_password", data);
 			resetPasswordState.pending = false;
-			goto("/login");
+			goto(localizeHref("/login"));
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				resetPasswordState.mainError =
@@ -97,8 +100,8 @@
 </script>
 
 <section
-	class="min-h-[calc(100svh-80px)] relative flex items-start justify-center pt-[40px] px-4"
-	style="background: url('bgs/image1.png') no-repeat center/cover"
+	class="min-h-[calc(100svh-80px)] relative flex items-start justify-center pt-[40px] px-4 no-repeat bg-cover bg-center"
+	style={`background-image: url(${image1})`}
 >
 	<form
 		onsubmit={async (e) => {
@@ -128,7 +131,7 @@
 		{#snippet navBtn(text = "", active = false, link = "")}
 			<Button
 				hover
-				onclick={() => goto(link)}
+				onclick={() => goto(localizeHref(link))}
 				c={clsx(
 					"text-xl font-['GT_Eesti_Pro_Display'] leading-5 font-black",
 					active ? "text-orange-500" : "text-white",
@@ -139,25 +142,24 @@
 		{/snippet}
 
 		<div class="grid grid-cols-[1fr_auto_1fr] mb-[40px] place-items-center">
-			{@render navBtn("Вход", true, "/login")}
+			{@render navBtn(m.forgot_login_button(), true, "/login")}
 			<div
 				class="w-0 h-10 outline outline-1 outline-offset-[-0.50px] outline-white"
 			></div>
-			{@render navBtn("Регистрация", false, "/register")}
+			{@render navBtn(m.forgot_register_button(), false, "/register")}
 		</div>
 
 		{#if step === 1}
 			<div
 				class="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] max-w-[358px] mx-auto mb-[20px] px-[16px]"
 			>
-				We have sent an SMS with the code to your phone or enter it in your
-				email.
+				{m.forgot_step1_description()}
 			</div>
 
 			<div class="grid gap-[20px] max-w-[358px] mx-auto mb-[16px]">
 				<LoginField
 					type="text"
-					placeholder="Введите почту"
+					placeholder={m.forgot_email_placeholder()}
 					name="email"
 					bind:value={email}
 					bind:err={resetPasswordState.error.email}
@@ -180,9 +182,9 @@
 					c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
 				>
 					{#if resetPasswordState.pending}
-						Отправка...
+						{m.forgot_sending_button()}
 					{:else}
-						Отправить смс
+						{m.forgot_send_sms_button()}
 					{/if}
 				</Button>
 			</div>
@@ -191,7 +193,7 @@
 				<div
 					class="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
 				>
-					Подтвердите почту
+					{m.forgot_verify_email_title()}
 				</div>
 
 				<div class="grid grid-cols-4 gap-2.5 mb-[10px]">
@@ -230,7 +232,7 @@
 				<div
 					class="text-white text-sm font-normal font-['GT_Eesti_Pro_Display'] mb-[20px]"
 				>
-					Resend it after 00:59
+					{m.forgot_resend_timer()}
 				</div>
 
 				<Button
@@ -240,9 +242,9 @@
 					c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
 				>
 					{#if resetPasswordState.pending}
-						Отправка...
+						{m.loading()}
 					{:else}
-						Отправить
+						{m.login_button()}
 					{/if}
 				</Button>
 			</div>
@@ -250,7 +252,7 @@
 			<div class="max-w-[358px] mx-auto grid gap-[20px]">
 				<LoginField
 					type="password"
-					placeholder="Новый пароль"
+					placeholder={m.forgot_new_password_placeholder()}
 					name="password"
 					bind:value={password}
 					bind:err={resetPasswordState.error.password}
@@ -259,7 +261,7 @@
 
 				<LoginField
 					type="password"
-					placeholder="Повторите пароль"
+					placeholder={m.forgot_confirm_password_placeholder()}
 					name="confirm_password"
 					bind:value={confirm_password}
 					bind:err={resetPasswordState.error.confirm_password}
@@ -282,9 +284,9 @@
 					c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
 				>
 					{#if resetPasswordState.pending}
-						Загрузка...
+						{m.loading()}
 					{:else}
-						Вход
+						{m.login_button()}
 					{/if}
 				</Button>
 			</div>

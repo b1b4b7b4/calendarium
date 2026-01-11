@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { debounce, locationSuggestionApi, selectedMapCoords } from "$lib";
+	import { m } from "$lib/paraglide/messages";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
 	import ImageIcon from "$lib/assets/imageIcon.svelte";
 	import PointerIcon from "$lib/assets/pointerIcon.svelte";
@@ -14,7 +15,7 @@
 	import compos1 from "$lib/assets/images/composi/compos1.png";
 
 	const compassItems = [
-		{ label: "Compass A", img: compos1 },
+		{ label: m.compass_a(), img: compos1 },
 		// { label: "Compass B", img: "https://placehold.co/106x106" },
 		// { label: "Compass C", img: "https://placehold.co/106x106" },
 	];
@@ -22,13 +23,13 @@
 
 	const settingsItems = $state([
 		{
-			label: "Show Compass",
-			desc: "Toggle the visibility of the compass on the map",
+			label: m.show_compass(),
+			desc: m.show_compass_desc(),
 			state: false,
 		},
 		{
-			label: "Enable Compass Interaction",
-			desc: "Allow users to interact with the compass",
+			label: m.enable_compass_interaction(),
+			desc: m.enable_compass_interaction_desc(),
 			state: false,
 		},
 	]);
@@ -47,7 +48,7 @@
 	});
 	let isDragging = $state(false);
 	let dragOffset = $state({ x: 0, y: 0 });
-	function handleMouseDown(e) {
+	function handleMouseDown(e: MouseEvent) {
 		if (!settingsItems[1].state) return;
 		isDragging = true;
 		dragOffset.x = e.clientX - position.x;
@@ -55,7 +56,7 @@
 		window.addEventListener("mousemove", handleMouseMove);
 		window.addEventListener("mouseup", handleMouseUp);
 	}
-	function handleMouseMove(e) {
+	function handleMouseMove(e: MouseEvent) {
 		if (!isDragging) return;
 		position.x = e.clientX - dragOffset.x;
 		position.y = e.clientY - dragOffset.y;
@@ -93,7 +94,7 @@
 				<div
 					class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px] flex justify-between items-center"
 				>
-					Compass
+{m.Compass()}
 
 					<Button hover onclick={() => (sidebarOpen = false)} c="">
 						<ArrowLeftIcon />
@@ -108,7 +109,7 @@
 					</Button>
 					<input
 						type="text"
-						placeholder="Search"
+						placeholder={m.compass_search_placeholder()}
 						class="placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] ring-0 border-0 outline-0 bg-transparent w-full p-0 m-0"
 						bind:value={searchState.query}
 						oninput={debounce(async () => {
@@ -122,7 +123,7 @@
 								await new Promise((r) => setTimeout(r, 1000));
 								searchState.results = res.data.features;
 							} catch (e) {
-								toast.error("Error fetching location suggestions");
+								toast.error(m.compass_location_error_toast());
 								searchState.results = [];
 							} finally {
 								searchState.pending = false;
@@ -144,7 +145,7 @@
 						<div
 							class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
 						>
-							Settings
+							{m.compass_settings()}
 						</div>
 
 						<div class="grid gap-[10px]">
@@ -175,7 +176,7 @@
 						<div
 							class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
 						>
-							Choose a compass
+							{m.choose_compass()}
 						</div>
 
 						<div class="flex gap-[10px]">
@@ -206,7 +207,7 @@
 							c="px-5 py-2.5 bg-orange-500 rounded-[43px] w-fit text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] flex items-center gap-[10px]"
 						>
 							<ImageIcon />
-							Add a photo
+							{m.add_photo()}
 						</Button>
 					</div>
 				</div>
@@ -219,7 +220,7 @@
 					<div
 						class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
 					>
-						Search Results
+						{m.compass_search_results_title()}
 					</div>
 
 					{#if searchState.pending}
@@ -253,7 +254,7 @@
 							class="text-stone-900 text
 -base font-normal font-['GT_Eesti_Pro_Display']"
 						>
-							No results found.
+							{m.no_results_found()}
 						</div>
 					{:else}
 						{#each searchState.results as result, idx (idx)}

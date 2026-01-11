@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state";
 	import { locales, localizeHref } from "$lib/paraglide/runtime";
+	import { m } from "$lib/paraglide/messages";
 	import "./layout.css";
 	import favicon from "$lib/assets/favicon.svg";
 	import Header from "$lib/components/Header.svelte";
@@ -28,7 +29,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>Bazi App</title>
+	<title>{m.app_title()}</title>
 </svelte:head>
 
 <Toaster position="bottom-right" />

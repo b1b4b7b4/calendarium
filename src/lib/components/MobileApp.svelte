@@ -1,5 +1,6 @@
 <script>
 	import AppStoreIcon from "$lib/assets/appStoreIcon.svelte";
+	import { m } from "$lib/paraglide/messages";
 	import GooglePlayIcon from "$lib/assets/googlePlayIcon.svelte";
 	import Button from "./Button.svelte";
 	import iPhone16Pro from "$lib/assets/images/iPhone 16 Pro.png";
@@ -11,17 +12,12 @@
 			<div
 				class="text-neutral-900 text-5xl font-bold font-['GT_Eesti_Pro_Display'] mb-[76px] mt-[93px] max-w-[500px] max-[800px]:text-4xl max-[800px]:mb-[40px]"
 			>
-				Ассистент для расчёта Ба-цзы, <br /> анализа энергии и жизненного
-				<br />
-				пути
+				{m.app_description_title()}
 			</div>
 			<div
 				class="opacity-60 text-neutral-900 text-base font-normal font-['GT_Eesti_Pro_Display'] mb-[40px] max-w-[600px] max-[1200px]:max-w-[400px]"
 			>
-				Откройте тайны своей судьбы и энергии с помощью приложения для расчёта
-				Ба-цзы! Наше приложение помогает глубже понять себя, выявить сильные и
-				слабые стороны, а также гармонизировать вашу жизнь через древнюю
-				китайскую метафизику.
+				{m.app_description_text()}
 			</div>
 
 			<div class="flex gap-[20px] max-[700px]:flex-wrap">
@@ -30,7 +26,7 @@
 					c="text-white text-lg font-semibold font-['GT_Eesti_Pro_Display'] px-7 min-h-[61px] bg-orange-500 rounded-[10px] flex items-center gap-[10px] text-nowrap"
 				>
 					<AppStoreIcon />
-					Скачать App store
+					{m.download_app_store()}
 				</Button>
 
 				<Button
@@ -38,7 +34,7 @@
 					c="px-7 min-h-[61px] rounded-[10px] outline outline-1 outline-offset-[-1px] outline-orange-500 text-orange-500 text-lg font-semibold font-['GT_Eesti_Pro_Display'] flex items-center gap-[10px] text-nowrap"
 				>
 					<GooglePlayIcon />
-					Скачать Google Play
+					{m.download_app_store()}
 				</Button>
 			</div>
 		</div>

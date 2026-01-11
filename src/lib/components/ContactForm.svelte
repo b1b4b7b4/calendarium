@@ -6,21 +6,22 @@
 	import ReasonSelector from "./ReasonSelector.svelte";
 	import toast from "svelte-french-toast";
 	import consultation from "$lib/assets/images/consultation.png";
+	import { m } from '$lib/paraglide/messages';
 
 	const contactStatusInit = {
 		name: "",
 		email: "",
-		reason: "" as string | number,
+		reason: "" as any,
 		description: "",
 	};
 
 	const contactStates = $state(contactStatusInit);
 	const reasons = [
-		"General Inquiry",
-		"Technical Support",
-		"Billing",
-		"Feedback",
-		"Other",
+		m.contact_reason_general(),
+		m.contact_reason_technical(),
+		m.contact_reason_billing(),
+		m.contact_reason_feedback(),
+		m.contact_reason_other(),
 	];
 
 	let contactStatus = $state({
@@ -38,7 +39,7 @@
 			};
 			const res = await api.post("/consultation", data);
 			contactStatus.pending = false;
-			toast.success("Consultation request sent successfully!");
+			toast.success(m.contact_success_toast());
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				contactStatus.mainError =
@@ -74,7 +75,7 @@
 				<div
 					class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] mb-[50px] max-[600px]:text-5xl max-[600px]:leading-[45px]"
 				>
-					Consultation
+					{m.contact_consultation()}
 				</div>
 
 				<div class="grid-cols-2 grid gap-[10px] mb-[10px]">
@@ -82,11 +83,11 @@
 						<div
 							class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] mb-[6px]"
 						>
-							Name
+							{m.contact_name()}
 						</div>
 						<input
 							type="text"
-							placeholder="Enter your name"
+							placeholder={m.contact_name_placeholder()}
 							bind:value={contactStates.name}
 							required
 							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500"
@@ -106,11 +107,11 @@
 						<div
 							class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] mb-[6px]"
 						>
-							Email
+							{m.contact_email()}
 						</div>
 						<input
 							type="text"
-							placeholder="Enter your email"
+							placeholder={m.contact_email_placeholder()}
 							bind:value={contactStates.email}
 							required
 							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500"
@@ -131,7 +132,7 @@
 					<div
 						class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] mb-[6px]"
 					>
-						Сhoose the reason for the feedback
+						{m.contact_reason_label()}
 					</div>
 					<ReasonSelector
 						options={reasons}
@@ -151,10 +152,10 @@
 					<div
 						class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] mb-[6px]"
 					>
-						Description
+						{m.contact_description()}
 					</div>
 					<textarea
-						placeholder="Describe your situation in detail"
+						placeholder={m.contact_description_placeholder()}
 						required
 						bind:value={contactStates.description}
 						class=" px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500 min-h-[133px]"
@@ -178,9 +179,9 @@
 						c="text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] min-w-44 px-5 bg-orange-500 rounded-[43px] min-h-[39px]"
 					>
 						{#if contactStatus.pending}
-							Sending...
+							{m.contact_sending()}
 						{:else}
-							To send
+							{m.contact_send()}
 						{/if}
 					</Button>
 				</div>

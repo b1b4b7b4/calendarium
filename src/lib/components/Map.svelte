@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { selectedMapCoords } from "$lib";
 	import { onMount } from "svelte";
+	import { m } from "$lib/paraglide/messages";
 
 	let mapBlock: HTMLDivElement;
 	onMount(() => {
@@ -14,8 +15,7 @@
 
 		L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 			maxZoom: 19,
-			attribution:
-				'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+			attribution: m.map_copyright(),
 		}).addTo(map);
 
 		selectedMapCoords.subscribe((coords) => {

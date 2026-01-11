@@ -13,6 +13,7 @@
 	import Rock from "$lib/assets/rock.svelte";
 	import Button from "$lib/components/Button.svelte";
 	import { m } from "$lib/paraglide/messages";
+	import { localizeHref } from "$lib/paraglide/runtime";
 	import clsx from "clsx";
 	import { getContext } from "svelte";
 	import toast from "svelte-french-toast";
@@ -29,11 +30,11 @@
 	];
 
 	const settingsItems = [
-		{ link: "/", name: "Our app" },
-		{ link: "/", name: "Facebook" },
-		{ link: "/", name: "Instagram" },
-		{ link: "/", name: "LinkedIn" },
-		{ link: "/privacy", name: "Privacy policy" },
+		{ link: "/", name: m.our_app() },
+		{ link: "/", name: m.facebook() },
+		{ link: "/", name: m.instagram() },
+		{ link: "/", name: m.linkedin() },
+		{ link: "/privacy", name: m.Privacy_Policy() },
 	];
 </script>
 
@@ -43,7 +44,7 @@
 	>
 		<Button
 			c="flex items-center gap-[10px] max-[850px]:hidden"
-			onclick={() => goto("/")}
+			onclick={() => goto(localizeHref("/"))}
 		>
 			<Rock />
 			<div
@@ -64,7 +65,7 @@
 				<Button
 					hover
 					c="justify-start text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] text-nowrap "
-					onclick={() => goto(item.link)}
+					onclick={() => goto(localizeHref(item.link))}
 				>
 					{item.name}
 				</Button>
@@ -74,11 +75,11 @@
 		<div class="flex justify-end">
 			{#if !$currentSession.user}
 				<Button
-					onclick={() => goto("/login")}
+					onclick={() => goto(localizeHref("/login"))}
 					hover
 					c="justify-start text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] px-5 rounded-[43px] outline outline-2 outline-offset-[-2px] outline-orange-100 w-full max-w-[130px] min-h-[39px]  text-nowrap "
 				>
-					Log in
+					{m.login_button()}
 				</Button>
 			{:else}
 				<Button
@@ -120,7 +121,7 @@
 		<div
 			class="text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display'] flex justify-between items-center"
 		>
-			Setting
+			{m.settings()}
 			<Button hover c="" onclick={() => settingsModal.set(false)}>
 				<CloseIcon />
 			</Button>
@@ -136,7 +137,7 @@
 		<div
 			class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] mb-[10px]"
 		>
-			Personal data
+			{m.personal_data()}
 		</div>
 
 		<!-- <div class="self-stretch inline-flex flex-col justify-start items-start gap-px"> -->
@@ -151,7 +152,7 @@
 				<div
 					class="text-orange-300 text-sm font-normal font-['GT_Eesti_Pro_Display']"
 				>
-					Full name
+					{m.full_name()}
 				</div>
 				<input
 					type="text"
@@ -166,7 +167,7 @@
 				<div
 					class="text-orange-300 text-sm font-normal font-['GT_Eesti_Pro_Display']"
 				>
-					Phone number
+					{m.phone_number()}
 				</div>
 				<input
 					type="text"
@@ -179,7 +180,7 @@
 				hover
 				c="px-4 py-4 bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-slate-500/5 text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] flex justify-between items-center w-full"
 			>
-				Change your password
+				{m.change_password()}
 				<div class="rotate-180">
 					<ArrowLeftIcon />
 				</div>
@@ -190,7 +191,7 @@
 		<div
 			class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] mb-[10px]"
 		>
-			About the site
+			{m.about_site()}
 		</div>
 
 		<div
@@ -201,7 +202,7 @@
 				<div>
 					<Button
 						onclick={() => {
-							goto(item.link);
+							goto(localizeHref(item.link));
 							settingsModal.set(false);
 						}}
 						hover
@@ -223,7 +224,7 @@
 				onclick={async () => {
 					const error = await removeSession();
 					if (error) {
-						toast.error("Error logging out. Please try again.");
+						toast.error(m.header_logout_error_toast());
 						return;
 					}
 					settingsModal.set(false);
@@ -231,7 +232,7 @@
 				hover
 				c="px-4 py-4 bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-slate-500/5 text-red-500 text-base font-normal font-['GT_Eesti_Pro_Display'] flex justify-between items-center w-full"
 			>
-				Log out of your account
+				{m.logout_account()}
 				<div class="rotate-180">
 					<ArrowLeftIcon />
 				</div>
@@ -254,7 +255,7 @@
 		<div
 			class="text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display'] flex justify-between items-center mb-[20px]"
 		>
-			Menu
+			{m.menu()}
 			<Button hover c="" onclick={() => asideModal.set(false)}>
 				<CloseIcon />
 			</Button>
@@ -275,7 +276,7 @@
 						hover
 						c="justify-start text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] text-nowrap "
 						onclick={() => {
-							goto(item.link);
+							goto(localizeHref(item.link));
 							asideModal.set(false);
 						}}
 					>

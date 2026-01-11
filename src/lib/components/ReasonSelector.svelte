@@ -3,10 +3,11 @@
 	import { fade, fly, slide } from "svelte/transition";
 	import Button from "./Button.svelte";
 	import { clsx } from "clsx";
+	import { m } from '$lib/paraglide/messages';
 
 	let {
-		options = ["option 1", "option 2", "option 3"],
-		placeholder = "Choose the reason for the feedback",
+		options = [m.reason_option_1(), m.reason_option_2(), m.reason_option_3()],
+		placeholder = m.reason_default_placeholder(),
 		selectedOption = $bindable(null),
 	} = $props();
 

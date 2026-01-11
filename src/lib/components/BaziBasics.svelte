@@ -3,6 +3,7 @@
 	import EarthIcon from "$lib/assets/EarthIcon.svelte";
 	import StarIcon from "$lib/assets/starIcon.svelte";
 	import Button from "./Button.svelte";
+	import { m } from "$lib/paraglide/messages";
 </script>
 
 <section class="bg-stone-300 mb-[75px]" id="bazi-basics">
@@ -16,7 +17,7 @@
 				<span
 					class="text-stone-900 text-2xl font-bold font-['GT_Eesti_Pro_Display']"
 				>
-					Bazi basics
+					{m.bazi_basics_heading()}
 				</span>
 				<StarIcon />
 			</div>
@@ -25,7 +26,7 @@
 				class="rounded-[20px] w-full min-[900px]:hidden max-[900px]:mb-[30px]"
 				height="531"
 				src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-				title="YouTube video player"
+				title={m.bazi_video_alt()}
 				frameborder="0"
 				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 				allowfullscreen
@@ -41,7 +42,7 @@
 					c="text-orange-500 text-base font-normal font-['GT_Eesti_Pro_Display'] bg-orange-100 rounded-[30px] outline outline-1 outline-offset-[-1px] outline-orange-500 w-full min-h-[40px] flex items-center justify-center gap-[10px]"
 				>
 					<EarthIcon />
-					<span>www.website.com</span>
+					<span>{m.website_url()}</span>
 				</Button>
 				<Button
 					hover
@@ -55,7 +56,7 @@
 					c="text-orange-500 text-base font-normal font-['GT_Eesti_Pro_Display'] bg-orange-100 rounded-[30px] outline outline-1 outline-offset-[-1px] outline-orange-500 w-full min-h-[40px] flex items-center justify-center gap-[10px]"
 				>
 					<EarthIcon />
-					<span>www.website.com</span>
+					<span>{m.website_url()}</span>
 				</Button>
 				<Button
 					hover
@@ -69,7 +70,7 @@
 			class="rounded-[20px] w-full max-[900px]:hidden"
 			height="531"
 			src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-			title="YouTube video player"
+			title={m.bazi_video_alt()}
 			frameborder="0"
 			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 			allowfullscreen

@@ -3,7 +3,9 @@ import axios from "axios";
 import { writable, get } from "svelte/store";
 import type { UserProfile } from "./types";
 import { apiUrl, proxyUrl } from "./constants";
-import toast from "svelte-french-toast";
+	import toast from "svelte-french-toast";
+	import { m } from "./paraglide/messages";
+	import { localizeHref } from "./paraglide/runtime";
 
 type Session = { user?: UserProfile, access?: string };
 export const currentSession = writable<Session>({});
@@ -39,11 +41,11 @@ api.interceptors.response.use(
 				return api(error.config);
 			} catch {
 				currentSession.set({});
-				goto('/login');
+				goto(localizeHref('/login'));
 			}
 		} else if (error.response?.status === 500) {
-			toast.error("Внутренняя ошибка сервера. Пожалуйста, попробуйте еще раз позже.");
-			toast.error(error.response.data.slice(0, 100) || "Неизвестная ошибка.");
+			toast.error(m.lib_server_error_toast());
+			toast.error(error.response.data.slice(0, 100) || m.lib_unknown_error_toast());
 		}
 		return Promise.reject(error);
 	}
@@ -52,7 +54,7 @@ api.interceptors.response.use(
 export async function saveSession(res: any) {
 	const data = await axios.post("/", res, { validateStatus: () => true });
 	if (data.status !== 200) {
-		return "Ошибка при установке сессии. Пожалуйста, попробуйте еще раз.";
+		return m.lib_session_error();
 	} else {
 		await invalidateAll()
 		return ""
@@ -62,7 +64,7 @@ export async function saveSession(res: any) {
 export async function removeSession() {
 	const data = await axios.delete("/", { validateStatus: () => true });
 	if (data.status !== 200) {
-		return "Ошибка при удалении сессии. Пожалуйста, попробуйте еще раз.";
+		return m.lib_delete_error();
 	} else {
 		await invalidateAll()
 		return ""

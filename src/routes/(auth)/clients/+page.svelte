@@ -9,6 +9,7 @@
 	import type { Client } from "$lib/types";
 	import { onMount } from "svelte";
 	import toast from "svelte-french-toast";
+	import { m } from "$lib/paraglide/messages";
 	import { fade, fly, slide } from "svelte/transition";
 
 	let searchQuery = $state("");
@@ -24,7 +25,7 @@
 		await new Promise((r) => setTimeout(r, 1000));
 		clientsState.loading = false;
 		if (res.status !== 200) {
-			toast.error("Ошибка при загрузке данных клиента");
+			toast.error(m.clients_load_error_toast());
 		} else {
 			clientsState.clients = res.data;
 		}
@@ -63,7 +64,7 @@
 							hover
 							onclick={() => (searchQuery = "")}
 							c="w-full justify-center text-white text-base font-medium font-['GT_Eesti_Pro_Display']"
-							>Отмена</Button
+							>{m.cancel_button()}</Button
 						>
 					</div>
 				{/if}
@@ -102,7 +103,7 @@
 					in:slide={{ duration: 500 }}
 					class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mt-2"
 				>
-					Клиенты не найдены
+					{m.clients_not_found()}
 				</div>
 			{:else}
 				<div class="grid gap-[10px]">

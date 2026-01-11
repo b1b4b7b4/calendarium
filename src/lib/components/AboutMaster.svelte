@@ -1,6 +1,7 @@
 <script>
 	import StarIcon from "$lib/assets/starIcon.svelte";
 	import image3 from "$lib/assets/images/image 3.png";
+	import { m } from '$lib/paraglide/messages';
 </script>
 
 <section
@@ -13,7 +14,7 @@
 		<div
 			class="justify-start text-stone-900 text-2xl font-bold font-['GT_Eesti_Pro_Display']"
 		>
-			About the master
+			{m.about_master_heading()}
 		</div>
 		<StarIcon />
 	</div>
@@ -35,25 +36,21 @@
 		<div
 			class="text-stone-900 text-7xl font-bold font-['GT_Eesti_Pro_Display'] leading-[63px] grid gap-1 max-[600px]:text-5xl max-[600px]:leading-[45px]"
 		>
-			<span class="mb-1">About Master</span>
-			<span class="text-orange-500"> Benson Yeo </span>
+			<span class="mb-1">{m.about_master_label()}</span>
+			<span class="text-orange-500"> {m.master_name()} </span>
 		</div>
 
 		<div
 			class="self-stretch justify-start text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] my-[28px]"
 		>
-			Allow me to share my story with you and here is how it goes.
+			{m.about_master_intro()}
 		</div>
 
-		<div
-			class="max-w-[487px] justify-start text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
-		>
-			In my past decade, I had been in pursue of learning my destiny or I should
-			said, searching for a meaning in life! It started with bad luck, bad luck
-			and bad luck! I was ambition in doing business but I lost all my saving
-			and investment for trusting others and the only person to blame is myself
-			but trust me, it is a lesson worth learning!
-		</div>
+			<div
+				class="max-w-[487px] justify-start text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+			>
+				{m.about_master_bio()}
+			</div>
 	</div>
 
 	<div>
@@ -63,7 +60,7 @@
 			<div
 				class="justify-start text-stone-900 text-2xl font-bold font-['GT_Eesti_Pro_Display']"
 			>
-				About the master
+				{m.about_master_heading()}
 			</div>
 			<StarIcon />
 		</div>
