@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { Menu, MenuSquare } from "@lucide/svelte";
 	import { goto } from "$app/navigation";
 	import {
@@ -6,6 +6,8 @@
 		removeSession,
 		settingsModal,
 		asideModal,
+		api,
+		debounce,
 	} from "$lib";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
@@ -37,6 +39,47 @@
 		{ link: "/", name: m.linkedin() },
 		{ link: "/privacy", name: m.Privacy_Policy() },
 	];
+
+	const updateFormStateInit = {
+		pending: false,
+		mainError: "",
+		error: {
+			full_name: "",
+			phone_number: "",
+		},
+	};
+
+	const fields = $state({
+		full_name: $currentSession?.user?.full_name ?? "",
+		phone_number: $currentSession?.user?.phone_number ?? "",
+	});
+
+	let updateFormState = $state(updateFormStateInit);
+
+	async function updateFormStateRequest() {
+		try {
+			updateFormState = {
+				...updateFormStateInit,
+				pending: true,
+			};
+
+			const [first_name, ...last_name_parts] = fields.full_name.split(" ");
+			const res = await api.patch(`user/${$currentSession.user?.id}`, {
+				first_name: first_name,
+				last_name: last_name_parts.join(" "),
+				phone_number: fields.phone_number,
+			});
+		} catch (e: any) {
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				updateFormState.mainError =
+					e.response.data.error || e.response.data.detail;
+			} else {
+				updateFormState.error = e.response?.data;
+			}
+		} finally {
+			updateFormState.pending = false;
+		}
+	}
 </script>
 
 <div class="bg-stone-900">
@@ -135,6 +178,9 @@
 		</div>
 
 		<div
+			oninput={debounce(() => {
+				updateFormStateRequest();
+			}, 500)}
 			class="grid gap-[10px]"
 			in:fly={{ y: 10, opacity: 0, duration: 200, delay: 30 }}
 		>
@@ -149,7 +195,7 @@
 				<input
 					type="text"
 					class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0 m-0 bg-transparent outline-none w-full border-0 focus:ring-0"
-					value={$currentSession.user.email}
+					bind:value={fields.full_name}
 				/>
 			</label>
 
@@ -165,7 +211,7 @@
 					use:imask={{ mask: "+00000000000", lazy: true }}
 					type="text"
 					class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0 m-0 bg-transparent outline-none w-full border-0 focus:ring-0"
-					value={$currentSession.user.phone_number}
+					bind:value={fields.phone_number}
 				/>
 			</label>
 

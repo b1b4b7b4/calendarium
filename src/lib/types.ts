@@ -82,6 +82,7 @@ export interface UserProfile {
 	id?: number; // readOnly
 	first_name?: string; // readOnly
 	last_name?: string; // readOnly
+	full_name?: string; // readOnly
 	email?: string; // readOnly
 	phone_number?: string; // nullable
 }
