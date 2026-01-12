@@ -1,7 +1,7 @@
 import { api } from "$lib";
+import { localizeHref } from "$lib/paraglide/runtime";
 import type { ServerLoad } from "@sveltejs/kit";
 import { decode } from "jsonwebtoken"
-import { localizeHref } from "../paraglide/runtime";
 
 export const load: ServerLoad = async ({ cookies }) => {
 	try {
