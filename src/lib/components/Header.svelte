@@ -19,6 +19,7 @@
 	import toast from "svelte-french-toast";
 	import { bounceIn, bounceOut, cubicIn, cubicInOut } from "svelte/easing";
 	import { fly, fade, slide } from "svelte/transition";
+	import { imask } from "@imask/svelte";
 
 	const menuItems = [
 		{ name: m.Main(), link: "/" },
@@ -107,15 +108,13 @@
 
 {#if $settingsModal && $currentSession.user}
 	<div
-		in:fade
-		out:fade
+		transition:fade
 		onclick={() => settingsModal.set(false)}
 		class="fixed inset-0 z-100 bg-black/30 backdrop-blur-blur"
 	></div>
 
 	<div
-		in:fly={{ y: 20, duration: 200 }}
-		out:fly={{ y: 20, duration: 200 }}
+		transition:fly={{ y: 20, duration: 200 }}
 		class="fixed z-101 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-full max-w-96 bg-orange-100 rounded-xl p-[20px] hide-body-scroll max-h-[80vh] overflow-y-auto hide-scrollbar"
 	>
 		<div
@@ -129,18 +128,11 @@
 
 		<div class="w-full h-[1px] bg-white my-[20px]"></div>
 
-		<!-- 		<div class="self-stretch  inline-flex flex-col justify-start items-start gap-px"> -->
-		<!--     <div class="self-stretch justify-start "></div> -->
-		<!--     <div class="self-stretch justify-start "></div> -->
-		<!-- </div> -->
-
 		<div
 			class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] mb-[10px]"
 		>
 			{m.personal_data()}
 		</div>
-
-		<!-- <div class="self-stretch inline-flex flex-col justify-start items-start gap-px"> -->
 
 		<div
 			class="grid gap-[10px]"
@@ -170,6 +162,7 @@
 					{m.phone_number()}
 				</div>
 				<input
+					use:imask={{ mask: "+00000000000", lazy: true }}
 					type="text"
 					class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0 m-0 bg-transparent outline-none w-full border-0 focus:ring-0"
 					value={$currentSession.user.phone_number}
@@ -177,6 +170,10 @@
 			</label>
 
 			<Button
+				onclick={() => {
+					goto(localizeHref("/forgot-password"));
+					settingsModal.set(false);
+				}}
 				hover
 				c="px-4 py-4 bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-slate-500/5 text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display'] flex justify-between items-center w-full"
 			>
@@ -199,7 +196,14 @@
 			in:fly={{ y: 10, opacity: 0, duration: 200, delay: 50 }}
 		>
 			{#each settingsItems as item, idx}
-				<div>
+				<div
+					in:fly|global={{
+						y: 10,
+						opacity: 0,
+						duration: 200,
+						delay: 33 * idx + 70,
+					}}
+				>
 					<Button
 						onclick={() => {
 							goto(localizeHref(item.link));
@@ -219,7 +223,7 @@
 
 		<div class="w-full h-[1px] bg-white my-[20px]"></div>
 
-		<div in:fly={{ y: 10, opacity: 0, duration: 200, delay: 80 }}>
+		<div in:fly|global={{ y: 10, opacity: 0, duration: 200, delay: 80 }}>
 			<Button
 				onclick={async () => {
 					const error = await removeSession();

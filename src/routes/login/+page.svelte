@@ -32,7 +32,7 @@
 			const res = await api.post("/user/login", data);
 			loginState.pending = false;
 			await saveSession(res.data);
-			goto(localizeHref("/"));
+			goto(localizeHref(page.url.searchParams.get("redi") || "/"));
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				loginState.mainError = e.response.data.error || e.response.data.detail;

@@ -179,7 +179,7 @@
 					{#each daysInMonth() as day, idx}
 						<div
 							class="w-full h-16 p-1"
-							transition:fade|global={{ duration: 200 }}
+							in:fade|global={{ y: 5, duration: 200, delay: idx * 4 }}
 						>
 							<Button
 								onclick={() => {

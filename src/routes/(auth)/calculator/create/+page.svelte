@@ -18,6 +18,7 @@
 	import { onMount } from "svelte";
 	import toast from "svelte-french-toast";
 	import { fade, fly, slide } from "svelte/transition";
+	import CalculatorField from "$lib/components/calculatorField.svelte";
 
 	const calculatorStateInit = {
 		date_of_birth: "",
@@ -25,7 +26,7 @@
 		name: "",
 		country: "",
 		email: "",
-		phone: "",
+		phone_number: "",
 		address: "",
 		remarks: "",
 	};
@@ -138,50 +139,52 @@
 				/>
 			</div>
 
-			<input
+			<CalculatorField
 				type="text"
 				bind:value={infoFields.name}
-				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
 				placeholder={m.name_placeholder()}
+				error={calculatorState.error.name}
 				required
 			/>
 
-			<input
-				type="text"
+			<CalculatorField
+				type="email"
 				bind:value={infoFields.email}
-				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
 				placeholder={m.create_email_placeholder()}
+				error={calculatorState.error.email}
 				required
 			/>
-			<input
+
+			<CalculatorField
 				type="text"
-				use:imask={{ mask: "+00000000000", lazy: true }}
 				bind:value={infoFields.phone_number}
-				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
 				placeholder={m.create_phone_placeholder()}
+				error={calculatorState.error.phone_number}
 				required
+				mask={{ mask: "+00000000000", lazy: true }}
 			/>
-			<input
+
+			<CalculatorField
 				type="text"
 				bind:value={infoFields.address}
-				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
 				placeholder={m.create_address_placeholder()}
+				error={calculatorState.error.address}
 				required
 			/>
 
-			<input
+			<CalculatorField
 				type="text"
 				bind:value={infoFields.country}
-				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
 				placeholder={m.create_country_placeholder()}
+				error={calculatorState.error.country}
 				required
 			/>
 
-			<input
+			<CalculatorField
 				type="text"
 				bind:value={infoFields.remark}
-				class="min-h-12 px-[20px] bg-white rounded-xl mb-[16px] placeholder:text-stone-400 text-base font-normal font-['GT_Eesti_Pro_Display'] leading-4 border-0 outline-0 w-full ring-0 focus-within:ring-2 ring-orange-500"
 				placeholder={m.create_remarks_placeholder()}
+				error={calculatorState.error.remarks}
 				required
 			/>
 

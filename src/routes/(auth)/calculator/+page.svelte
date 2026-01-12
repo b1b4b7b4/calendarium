@@ -33,12 +33,17 @@
 		mainError: "",
 	});
 
+	const today = new Date();
+
 	let gender = $state(m.male());
 	const dates = $state({
-		hours: "",
-		days: "",
-		months: "",
-		years: "",
+		hours:
+			today.getHours().toString().padStart(2, "0") +
+			":" +
+			today.getMinutes().toString().padStart(2, "0"),
+		days: today.getDate().toString(),
+		months: (today.getMonth() + 1).toString(),
+		years: today.getFullYear().toString(),
 	});
 
 	async function calcuateRequest(data: typeof calculatorStateInit) {
@@ -143,7 +148,7 @@
 
 			{#if calculatorState.mainError}
 				<div
-					in:fade
+					transition:slide
 					class="text-red-500 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mb-[16px]"
 				>
 					{calculatorState.mainError}

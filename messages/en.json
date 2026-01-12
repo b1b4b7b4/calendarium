@@ -183,5 +183,10 @@
 	"short_wednesday": "Wed",
 	"short_thursday": "Thu",
 	"short_friday": "Fri",
-	"short_saturday": "Sat"
+	"short_saturday": "Sat",
+	"client_email_label": "Email",
+	"client_phone_label": "Phone",
+	"client_address_label": "Address",
+	"client_country_label": "Country",
+	"client_remarks_label": "Remarks"
 }

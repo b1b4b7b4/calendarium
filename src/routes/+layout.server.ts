@@ -14,7 +14,6 @@ export const load: ServerLoad = async ({ cookies }) => {
 		const res = await axios(`${apiUrl}/user/${userId}`, {
 			headers: { Authorization: `Bearer ${access}` }
 		});
-		console.log(res.data)
 		return {
 			userId,
 			user: res.data,

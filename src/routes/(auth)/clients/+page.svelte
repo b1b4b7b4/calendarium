@@ -12,6 +12,9 @@
 	import { m } from "$lib/paraglide/messages";
 	import { fade, fly, slide } from "svelte/transition";
 	import image from "$lib/assets/images/bgs/image.png";
+	import { LucideAlignEndVertical } from "@lucide/svelte";
+	import EditIcon from "$lib/assets/editIcon.svelte";
+	import BinIcon from "$lib/assets/BinIcon.svelte";
 
 	let searchQuery = $state("");
 
@@ -41,26 +44,23 @@
 	class="min-h-[calc(100svh-80px)] relative flex items-start justify-center pt-[40px] px-4 bg-no-repeat bg-center bg-cover"
 	style={`background-image: url(${image});`}
 >
-	<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px] flex">
+	<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px] flex gap-[17px]">
 		<div
-			class="w-full max-w-96 py-[20px] bg-stone-900 rounded-tl-[20px] rounded-tr-[20px] px-[16px] min-h-[358px]"
+			class="w-[390px] min-h-[558px] py-[20px] bg-stone-900 rounded-tl-[20px] rounded-tr-[20px] px-[16px] min-h-[358px]"
 		>
 			<div class="flex items-center gap-[10px] mb-[20px]">
 				<label
-					class="px-4 bg-stone-300 rounded-xl focus-within:ring-2 ring-orange-500 flex items-center gap-2 min-h-[50px]"
+					class="px-4 bg-stone-300 rounded-xl focus-within:ring-2 ring-orange-500 flex items-center gap-2 min-h-[50px] w-full"
 				>
 					<SearchIcon />
 					<input
 						bind:value={searchQuery}
 						type="text"
-						class="ring-0 border-0 bg-transparent text-stone-950 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0"
+						class="ring-0 border-0 bg-transparent text-stone-950 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0 w-full"
 					/>
 				</label>
 				{#if searchQuery.length > 0}
-					<div
-						in:slide={{ duration: 250, axis: "x" }}
-						out:slide={{ duration: 250, axis: "x" }}
-					>
+					<div transition:slide={{ duration: 250, axis: "x" }}>
 						<Button
 							hover
 							onclick={() => (searchQuery = "")}
@@ -75,11 +75,14 @@
 				<div
 					class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mt-2 grid gap-[10px]"
 				>
-					{#each Array(3) as _, idx (idx)}
-						<div out:slide|global class="w-full">
+					{#each Array(5) as _, idx (idx)}
+						<div
+							in:slide|global={{ duration: 200, delay: 20 * idx }}
+							class="w-full"
+						>
 							<Button
 								hover
-								c="border-b border-orange-100 py-[6px] flex items-center justify-between w-full text-left"
+								c="border-b border-orange-100 py-[6px] flex items-center justify-between w-full text-left  min-h-[57px]"
 							>
 								<div class="min-w-[50%]">
 									<div
@@ -109,7 +112,7 @@
 			{:else}
 				<div class="grid gap-[10px]">
 					{#each clientsState.clients as client, idx (idx)}
-						{#if client.name.includes(searchQuery)}
+						{#if client.name.includes(searchQuery) || client.email.includes(searchQuery)}
 							<div
 								in:slide|global={{ delay: idx * 33 }}
 								out:fade|global={{ duration: 100 }}
@@ -130,7 +133,7 @@
 										<div
 											class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display']"
 										>
-											{client.name}
+											{client.email}
 										</div>
 									</div>
 									<div>
@@ -148,7 +151,53 @@
 			<div
 				transition:slide={{ axis: "x", duration: 300 }}
 				class="min-w-[649px] p-[20px] bg-stone-900 rounded-t-[20px] mt-2"
-			></div>
+			>
+				<div class="px-4 py-2.5 bg-stone-300 h-full">
+					<div class="grid grid-cols-[1fr_auto_1fr] mb-[10px]">
+						<Button hover c="">
+							<EditIcon />
+						</Button>
+
+						<div
+							class="justify-start text-stone-900 text-xl font-normal font-['GT_Eesti_Pro_Display']"
+						>
+							{selectedClient.name}
+						</div>
+
+						<Button hover c="justify-self-end">
+							<BinIcon />
+						</Button>
+					</div>
+
+					{#snippet RowBlock(label = "", value = "")}
+						<div class="flex flex-col gap-[1px]">
+							<div
+								class="self-stretch justify-start text-orange-500 text-sm font-normal font-['GT_Eesti_Pro_Display']"
+							>
+								{label}
+							</div>
+							<div
+								class="self-stretch justify-start text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+							>
+								{value}
+							</div>
+						</div>
+					{/snippet}
+
+					{@render RowBlock(m.client_email_label(), selectedClient.email)}
+					{@render RowBlock(
+						m.client_date_of_birth_label(),
+						new Date(selectedClient.date_of_birth).toLocaleDateString("ru-RU"),
+					)}
+					{@render RowBlock(
+						m.client_phone_label(),
+						selectedClient.phone_number,
+					)}
+					{@render RowBlock(m.client_address_label(), selectedClient.address)}
+					{@render RowBlock(m.client_country_label(), selectedClient.country)}
+					{@render RowBlock(m.client_remarks_label(), selectedClient.remark)}
+				</div>
+			</div>
 		{/if}
 	</div>
 </section>
