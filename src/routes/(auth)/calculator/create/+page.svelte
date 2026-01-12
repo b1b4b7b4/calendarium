@@ -65,8 +65,9 @@
 			const res = await api.post("/client", data);
 			toast.success(m.calculator_data_saved_toast());
 		} catch (e: any) {
-			if (e.response?.data?.error) {
-				calculatorState.mainError = e.response.data.error;
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				calculatorState.mainError =
+					e.response.data.error || e.response.data.detail;
 			} else {
 				calculatorState.error = e.response?.data;
 			}
@@ -104,7 +105,10 @@
 			</div>
 
 			<div class="mb-[20px]">
-				<ReasonSelector options={[m.male(), m.female()]} selectedOption={gender} />
+				<ReasonSelector
+					options={[m.male(), m.female()]}
+					selectedOption={gender}
+				/>
 			</div>
 
 			<div class="flex gap-[8px] items-center mb-[16px]">
@@ -114,7 +118,12 @@
 					bind:value={dates.hours}
 					required
 				/>
-				<DateField match="00" 				title={m.day_title()} bind:value={dates.days} required />
+				<DateField
+					match="00"
+					title={m.day_title()}
+					bind:value={dates.days}
+					required
+				/>
 				<DateField
 					match="00"
 					title={m.month_title()}
@@ -193,7 +202,7 @@
 
 			{#if calculatorState.mainError}
 				<div
-					in:fade
+					transition:slide
 					class="text-red-500 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mb-[16px]"
 				>
 					{calculatorState.mainError}

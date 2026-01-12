@@ -11,6 +11,7 @@
 	import toast from "svelte-french-toast";
 	import { m } from "$lib/paraglide/messages";
 	import { fade, fly, slide } from "svelte/transition";
+	import image from "$lib/assets/images/bgs/image.png";
 
 	let searchQuery = $state("");
 
@@ -37,8 +38,8 @@
 </script>
 
 <section
-	class="min-h-[calc(100svh-80px)] relative flex items-start justify-center pt-[40px] px-4"
-	style="background: url('bgs/image.png') no-repeat center/cover"
+	class="min-h-[calc(100svh-80px)] relative flex items-start justify-center pt-[40px] px-4 bg-no-repeat bg-center bg-cover"
+	style={`background-image: url(${image});`}
 >
 	<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px] flex">
 		<div

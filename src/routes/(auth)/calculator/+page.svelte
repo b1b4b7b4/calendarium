@@ -17,6 +17,7 @@
 	import { onMount } from "svelte";
 	import toast from "svelte-french-toast";
 	import { fade, fly, slide } from "svelte/transition";
+	import image from "$lib/assets/images/bgs/image.png";
 
 	const calculatorStateInit = {
 		hour: "",
@@ -63,8 +64,8 @@
 </script>
 
 <section
-	class="min-h-[calc(100svh-80px)] flex items-start justify-center pt-[40px] px-4"
-	style="background: url('bgs/image.png') no-repeat center/cover"
+	class="min-h-[calc(100svh-80px)] flex items-start justify-center pt-[40px] px-4 bg-no-repeat bg-center bg-cover"
+	style={`background-image: url(${image});`}
 >
 	<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px] max-w-[500px]">
 		<form
@@ -92,7 +93,10 @@
 			</div>
 
 			<div class="mb-[20px]">
-				<ReasonSelector options={[m.male(), m.female()]} selectedOption={gender} />
+				<ReasonSelector
+					options={[m.male(), m.female()]}
+					selectedOption={gender}
+				/>
 			</div>
 
 			<div class="flex gap-[8px] items-center mb-[16px]">
@@ -102,7 +106,12 @@
 					bind:value={dates.hours}
 					required
 				/>
-				<DateField match="00" title={m.calculator_day_title()} bind:value={dates.days} required />
+				<DateField
+					match="00"
+					title={m.calculator_day_title()}
+					bind:value={dates.days}
+					required
+				/>
 				<DateField
 					match="00"
 					title={m.calculator_month_title()}

@@ -24,7 +24,10 @@
 	</div>
 
 	<input
-		use:imask={{ mask: match, lazy: true }}
+		use:imask={{
+			mask: match,
+			lazy: true,
+		}}
 		bind:value
 		type="text"
 		class="text-stone-950 text-sm font-normal font-['GT_Eesti_Pro_Display'] w-full border-0 ring-0 p-0 m-0 bg-transparent"

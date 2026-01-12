@@ -3,12 +3,13 @@
 	import { fade, fly, slide } from "svelte/transition";
 	import Button from "./Button.svelte";
 	import { clsx } from "clsx";
-	import { m } from '$lib/paraglide/messages';
+	import { m } from "$lib/paraglide/messages";
 
 	let {
 		options = [m.reason_option_1(), m.reason_option_2(), m.reason_option_3()],
 		placeholder = m.reason_default_placeholder(),
 		selectedOption = $bindable(null),
+		selectedOptionIndex = $bindable(null),
 	} = $props();
 
 	// let selectedOption = $state<string | null>(null);
@@ -61,6 +62,7 @@
 					class="text-left w-full cursor-pointer py-1"
 					onclick={() => {
 						selectedOption = option;
+						selectedOptionIndex = idx;
 						active = false;
 					}}>{option}</button
 				>

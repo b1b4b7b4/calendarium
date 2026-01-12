@@ -31,6 +31,8 @@
 			loginState = { ...loginStateInit, pending: true };
 			const res = await api.post("/user/login", data);
 			loginState.pending = false;
+			await saveSession(res.data);
+			goto(localizeHref("/"));
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				loginState.mainError = e.response.data.error || e.response.data.detail;

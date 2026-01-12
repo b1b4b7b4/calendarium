@@ -1,14 +1,20 @@
 import { api } from "$lib";
+import { apiUrl } from "$lib/constants";
 import { localizeHref } from "$lib/paraglide/runtime";
 import type { ServerLoad } from "@sveltejs/kit";
+import axios from "axios";
 import { decode } from "jsonwebtoken"
 
 export const load: ServerLoad = async ({ cookies }) => {
 	try {
 		const access = cookies.get("access");
 		const decodedData = decode(access || "", { complete: true });
-		const userId = (decodedData?.payload as any).user_id
-		const res = await api("/user/" + userId);
+		const userId = (decodedData?.payload as any).user_id - 1
+		console.log("Decoded user ID:", userId);
+		const res = await axios(`${apiUrl}/user/${userId}`, {
+			headers: { Authorization: `Bearer ${access}` }
+		});
+		console.log(res.data)
 		return {
 			userId,
 			user: res.data,

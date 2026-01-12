@@ -6,12 +6,12 @@
 	import ReasonSelector from "./ReasonSelector.svelte";
 	import toast from "svelte-french-toast";
 	import consultation from "$lib/assets/images/consultation.png";
-	import { m } from '$lib/paraglide/messages';
+	import { m } from "$lib/paraglide/messages";
 
 	const contactStatusInit = {
 		name: "",
 		email: "",
-		reason: "" as any,
+		reason: null,
 		description: "",
 	};
 
@@ -67,7 +67,7 @@
 					await createConsultation({
 						name: contactStates.name,
 						email: contactStates.email,
-						reason: reasons.indexOf(contactStates.reason),
+						reason: contactStates.reason,
 						description: contactStates.description,
 					});
 				}}
@@ -136,7 +136,7 @@
 					</div>
 					<ReasonSelector
 						options={reasons}
-						selectedOption={contactStates.reason}
+						bind:selectedOptionIndex={contactStates.reason}
 					/>
 					{#if contactStatus.error.reason}
 						<div

@@ -13,6 +13,8 @@
 	import toast from "svelte-french-toast";
 	import { fade, fly, slide } from "svelte/transition";
 	import compos1 from "$lib/assets/images/composi/compos1.png";
+	import { page } from "$app/state";
+	import { innerHeight, innerWidth } from "svelte/reactivity/window";
 
 	const compassItems = [
 		{ label: m.compass_a(), img: compos1 },
@@ -43,8 +45,8 @@
 	});
 
 	let position = $state({
-		x: window.innerWidth / 2,
-		y: window.innerHeight / 2,
+		x: (innerWidth?.current ?? 1920) / 2,
+		y: (innerHeight?.current ?? 1080) / 2,
 	});
 	let isDragging = $state(false);
 	let dragOffset = $state({ x: 0, y: 0 });
@@ -94,7 +96,7 @@
 				<div
 					class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px] flex justify-between items-center"
 				>
-{m.Compass()}
+					{m.Compass()}
 
 					<Button hover onclick={() => (sidebarOpen = false)} c="">
 						<ArrowLeftIcon />
@@ -158,7 +160,7 @@
 											{item.label}
 										</div>
 										<div
-											class="self-stretch justify-start text-orange-300 text-sm font-normal font-['GT_Eesti_Pro_Display']"
+											class="self-stretch justify-start text-orange-300 text-sm font-normal font-['GT_Eesti_Pro_Display'] max-w-[40ch] line-clamp-2"
 										>
 											{item.desc}
 										</div>
