@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { debounce, locationSuggestionApi, selectedMapCoords } from "$lib";
+	import {
+		api,
+		debounce,
+		locationSuggestionApi,
+		selectedMapCoords,
+	} from "$lib";
 	import { m } from "$lib/paraglide/messages";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
 	import ImageIcon from "$lib/assets/imageIcon.svelte";
@@ -15,6 +20,7 @@
 	import compos1 from "$lib/assets/images/composi/compos1.png";
 	import { page } from "$app/state";
 	import { innerHeight, innerWidth } from "svelte/reactivity/window";
+	import { onMount } from "svelte";
 
 	const compassItems = [
 		{ label: m.compass_a(), img: compos1 },
@@ -68,6 +74,23 @@
 		window.removeEventListener("mousemove", handleMouseMove);
 		window.removeEventListener("mouseup", handleMouseUp);
 	}
+
+	const composiState = $state({
+		pending: false,
+		items: [] as any[],
+		error: "",
+	});
+
+	onMount(async () => {
+		try {
+			composiState.pending = true;
+			const res = await api.get("/compass");
+		} catch (e: any) {
+			composiState.error = e.response?.data?.error || e.response?.data?.detail;
+		} finally {
+			composiState.pending = false;
+		}
+	});
 </script>
 
 <div class="w-full flex">

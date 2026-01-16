@@ -19,6 +19,25 @@
 	import { fade, fly, slide } from "svelte/transition";
 	import image from "$lib/assets/images/bgs/image.png";
 
+	type BaziResponse = {
+		year: {
+			ganzhi: string;
+			parsed: string;
+		};
+		month: {
+			ganzhi: string;
+			parsed: string;
+		};
+		day: {
+			ganzhi: string;
+			parsed: string;
+		};
+		hour: {
+			ganzhi: string;
+			parsed: string;
+		};
+	};
+
 	const calculatorStateInit = {
 		hour: "",
 		day: "",
@@ -46,7 +65,11 @@
 		years: today.getFullYear().toString(),
 	});
 
-	async function calcuateRequest(data: typeof calculatorStateInit) {
+	let bazi: Partial<BaziResponse> = $state({});
+
+	async function calcuateRequest(
+		data: Partial<typeof calculatorStateInit & { minute: string }>,
+	) {
 		try {
 			calculatorState = {
 				pending: true,
@@ -55,6 +78,7 @@
 			};
 			const res = await api.post("/calculator", data);
 			toast.success(m.calculator_save_success_toast());
+			bazi = res.data.bazi;
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				calculatorState.mainError =
@@ -72,101 +96,125 @@
 	class="min-h-[calc(100svh-80px)] flex items-start justify-center pt-[40px] px-4 bg-no-repeat bg-center bg-cover"
 	style={`background-image: url(${image});`}
 >
-	<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px] max-w-[500px]">
-		<form
-			class="bg-stone-300 p-[16px]"
-			onsubmit={async (e) => {
-				e.preventDefault();
-				await calcuateRequest({
-					hour: dates.hours,
-					day: dates.days,
-					month: dates.months,
-					year: dates.years,
-					gender,
-				});
-			}}
-		>
-			<div class="flex justify-between items-center mb-[16px]">
-				<div
-					class="w-96 justify-start text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display']"
-				>
-					{m.calculator_personal_info()}
-				</div>
-				<Button hover c="">
-					<EditIcon />
-				</Button>
-			</div>
-
-			<div class="mb-[20px]">
-				<ReasonSelector
-					options={[m.male(), m.female()]}
-					selectedOption={gender}
-				/>
-			</div>
-
-			<div class="flex gap-[8px] items-center mb-[16px]">
-				<DateField
-					match="00:00"
-					title={m.calculator_hour_title()}
-					bind:value={dates.hours}
-					required
-				/>
-				<DateField
-					match="00"
-					title={m.calculator_day_title()}
-					bind:value={dates.days}
-					required
-				/>
-				<DateField
-					match="00"
-					title={m.calculator_month_title()}
-					bind:value={dates.months}
-					required
-				/>
-				<DateField
-					match="0000"
-					title={m.calculator_year_title()}
-					bind:value={dates.years}
-					required
-				/>
-			</div>
-
-			<div class="flex justify-center mb-[16px]">
-				<Button
-					disabled={calculatorState.pending}
-					type="submit"
-					hover
-					c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
-				>
-					{#if calculatorState.pending}
-						{m.calculator_saving()}
-					{:else}
-						{m.calculator_save()}
-					{/if}
-				</Button>
-			</div>
-
-			{#if calculatorState.mainError}
-				<div
-					transition:slide
-					class="text-red-500 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mb-[16px]"
-				>
-					{calculatorState.mainError}
-				</div>
-			{/if}
-
-			<div class="flex justify-center gap-[20px]">
-				<div
-					class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
-				>
-					{m.calculator_share()}
+	<div class="flex flex-col items-center gap-[20px]">
+		<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px] max-w-[500px]">
+			<form
+				class="bg-stone-300 p-[16px]"
+				onsubmit={async (e) => {
+					e.preventDefault();
+					const [h, m] = dates.hours.split(":");
+					await calcuateRequest({
+						hour: h,
+						minute: m,
+						day: dates.days,
+						month: dates.months,
+						year: dates.years,
+						gender,
+					});
+				}}
+			>
+				<div class="flex justify-between items-center mb-[16px]">
+					<div
+						class="w-96 justify-start text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display']"
+					>
+						{m.calculator_personal_info()}
+					</div>
+					<Button hover c="">
+						<EditIcon />
+					</Button>
 				</div>
 
-				<Button hover c=""><ShareIcon /></Button>
-				<Button hover c="">
-					<FileIcon />
-				</Button>
-			</div>
-		</form>
+				<div class="mb-[20px]">
+					<ReasonSelector
+						options={[m.male(), m.female()]}
+						selectedOption={gender}
+					/>
+				</div>
+
+				<div class="flex gap-[8px] items-center mb-[16px]">
+					<DateField
+						match="00:00"
+						title={m.calculator_hour_title()}
+						bind:value={dates.hours}
+						required
+					/>
+					<DateField
+						match="00"
+						title={m.calculator_day_title()}
+						bind:value={dates.days}
+						required
+					/>
+					<DateField
+						match="00"
+						title={m.calculator_month_title()}
+						bind:value={dates.months}
+						required
+					/>
+					<DateField
+						match="0000"
+						title={m.calculator_year_title()}
+						bind:value={dates.years}
+						required
+					/>
+				</div>
+
+				<div class="flex justify-center mb-[16px]">
+					<Button
+						disabled={calculatorState.pending}
+						type="submit"
+						hover
+						c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
+					>
+						{#if calculatorState.pending}
+							{m.calculator_saving()}
+						{:else}
+							{m.calculator_save()}
+						{/if}
+					</Button>
+				</div>
+
+				{#if calculatorState.mainError}
+					<div
+						transition:slide
+						class="text-red-500 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mb-[16px]"
+					>
+						{calculatorState.mainError}
+					</div>
+				{/if}
+
+				<div class="flex justify-center gap-[20px]">
+					<div
+						class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+					>
+						{m.calculator_share()}
+					</div>
+
+					<Button hover c=""><ShareIcon /></Button>
+					<Button hover c="">
+						<FileIcon />
+					</Button>
+				</div>
+			</form>
+		</div>
+
+		<div class="flex gap-2">
+			{#each Object.entries(bazi) as [key, value], idx (key)}
+				<div
+					transition:slide|global={{ delay: 30 * idx }}
+					class="mt-[20px] p-[16px] bg-stone-300"
+				>
+					<div
+						class="text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[8px]"
+					>
+						{value.ganzhi}
+					</div>
+					<div
+						class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+					>
+						{value.parsed}
+					</div>
+				</div>
+			{/each}
+		</div>
 	</div>
 </section>

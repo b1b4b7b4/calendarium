@@ -8,11 +8,6 @@
 		// @ts-ignore
 		const L = window.L;
 
-		if (!L.map) {
-			console.error("Leaflet.js is not loaded.");
-			return;
-		}
-
 		const map = L.map(mapBlock, {
 			center: $selectedMapCoords,
 			zoom: 13,
