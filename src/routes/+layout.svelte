@@ -9,7 +9,7 @@
 	import { onMount, setContext } from "svelte";
 	import { writable } from "svelte/store";
 	import { Toaster } from "svelte-french-toast";
-	import { currentSession } from "$lib";
+	import { api, currentSession } from "$lib";
 
 	let { children } = $props();
 
@@ -24,6 +24,18 @@
 	currentSession.set(page.data as any);
 	$effect(() => {
 		currentSession.set(page.data as any);
+	});
+
+	onMount(() => {
+		let interval = setInterval(async () => {
+			try {
+				const res = await api("/user");
+			} catch (e) {
+				console.error("Error fetching user data:", e);
+			}
+		}, 1000 * 60);
+
+		return () => clearInterval(interval);
 	});
 </script>
 

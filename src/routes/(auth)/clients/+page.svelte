@@ -56,7 +56,7 @@
 					<input
 						bind:value={searchQuery}
 						type="text"
-						class="ring-0 border-0 bg-transparent text-stone-950 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0 w-full"
+						class="ring-0 border-0 bg-transparent text-stone-950 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0"
 					/>
 				</label>
 				{#if searchQuery.length > 0}

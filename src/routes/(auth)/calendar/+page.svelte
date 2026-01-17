@@ -175,11 +175,14 @@
 					{/each}
 				</div>
 
+				<div
+					class="absolute [position-anchor:--calbg] left-[anchor(left)] right-[anchor(right)] bottom-[anchor(bottom)] top-[anchor(top)] bg-orange-500/20 transition-all pointer-events-none rounded-lg"
+				></div>
 				<div class="grid grid-cols-7 place-items-center p-[4px]">
 					{#each daysInMonth() as day, idx}
 						<div
-							class="w-full h-16 p-1"
-							in:fade|global={{ y: 5, duration: 200, delay: idx * 4 }}
+							class="w-full h-16 p-1 hover:[anchor-name:--calbg]"
+							in:fade|global={{ duration: 200, delay: idx * 4 }}
 						>
 							<Button
 								onclick={() => {
@@ -192,9 +195,8 @@
 									day.isToday && "font-bold bg-orange-200",
 									!day.isCurrentMonth && "opacity-50",
 									day.date.getDate() === Number(dates.days) &&
-										day.isCurrentMonth
-										? "bg-orange-500 text-white"
-										: "hover:bg-orange-100",
+										day.isCurrentMonth &&
+										"bg-orange-500 text-white",
 								)}
 							>
 								{day.dayNumber}

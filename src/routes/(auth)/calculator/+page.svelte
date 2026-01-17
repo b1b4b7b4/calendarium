@@ -200,7 +200,7 @@
 		<div class="flex gap-2">
 			{#each Object.entries(bazi) as [key, value], idx (key)}
 				<div
-					transition:slide|global={{ delay: 30 * idx }}
+					in:slide|global={{ delay: 30 * idx }}
 					class="mt-[20px] p-[16px] bg-stone-300"
 				>
 					<div
