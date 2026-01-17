@@ -22,6 +22,7 @@
 	import { bounceIn, bounceOut, cubicIn, cubicInOut } from "svelte/easing";
 	import { fly, fade, slide } from "svelte/transition";
 	import { imask } from "@imask/svelte";
+	import { page } from "$app/state";
 
 	const menuItems = [
 		{ name: m.Main(), link: "/" },
@@ -104,14 +105,21 @@
 			hover><Menu class="text-orange-100" /></Button
 		>
 
-		<nav class="flex items-center gap-[20px] justify-center max-[750px]:hidden">
+		<nav class="flex items-center justify-center max-[750px]:hidden h-full">
+			<div
+				class="absolute inset-0 rounded-lg bg-zinc-500/10 [position-anchor:--navbtn] left-[anchor(left)] right-[anchor(right)] top-[anchor(top)] bottom-[anchor(bottom)] transition-all"
+			></div>
 			{#each menuItems as item, idx}
 				<Button
 					hover
-					c="justify-start text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] text-nowrap "
+					c={clsx(
+						"group justify-start text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] text-nowrap h-full",
+					)}
 					onclick={() => goto(localizeHref(item.link))}
 				>
-					{item.name}
+					<div class="group-hover:[anchor-name:--navbtn] px-[10px] py-[5px]">
+						{item.name}
+					</div>
 				</Button>
 			{/each}
 		</nav>
