@@ -10,93 +10,19 @@
 	import { fade, slide } from "svelte/transition";
 	import { localizeHref } from "$lib/paraglide/runtime";
 	import image1 from "$lib/assets/images/bgs/image1.png";
+	import { useForgotPasswordMutation } from "$lib/hooks.svelte";
+	import { writable } from "svelte/store";
 
-	const resetPasswordStateInit = {
+	const { mainError, loading, errors, forgotPassword } =
+		useForgotPasswordMutation();
+	const step = writable(1);
+
+	const fields = $state({
 		email: "",
-		code: "",
 		password: "",
 		confirm_password: "",
-	};
-
-	let step = $state(1);
-	let code = $state(Array(4).fill(""));
-	let email = $state("");
-	let password = $state("");
-	let confirm_password = $state("");
-
-	let resetPasswordState = $state({
-		pending: false,
-		error: { ...resetPasswordStateInit },
-		mainError: "",
 	});
-	async function sendResetCode(data: Partial<typeof resetPasswordStateInit>) {
-		try {
-			resetPasswordState = {
-				error: resetPasswordStateInit,
-				pending: true,
-				mainError: "",
-			};
-			const res = await api.post("/user/send_reset_code", data);
-			step = 2;
-			toast.success(m.forgot_code_sent_toast());
-			resetPasswordState.pending = false;
-		} catch (e: any) {
-			if (e.response?.data?.error || e.response?.data?.detail) {
-				resetPasswordState.mainError =
-					e.response.data.error || e.response.data.detail;
-			} else {
-				resetPasswordState.error = e.response?.data;
-			}
-		} finally {
-			resetPasswordState.pending = false;
-		}
-	}
-
-	async function verifyResetCode(data: Partial<typeof resetPasswordStateInit>) {
-		try {
-			resetPasswordState = {
-				error: resetPasswordStateInit,
-				pending: true,
-				mainError: "",
-			};
-
-			const res = await api.post("/user/verify_reset_code", data);
-			resetPasswordState.pending = false;
-			step = 3;
-		} catch (e: any) {
-			if (e.response?.data?.error || e.response?.data?.detail) {
-				resetPasswordState.mainError =
-					e.response.data.error || e.response.data.detail;
-			} else {
-				resetPasswordState.error = e.response?.data;
-			}
-		} finally {
-			resetPasswordState.pending = false;
-		}
-	}
-
-	async function resetPassword(data: Partial<typeof resetPasswordStateInit>) {
-		try {
-			resetPasswordState = {
-				error: resetPasswordStateInit,
-				pending: true,
-				mainError: "",
-			};
-
-			const res = await api.post("/user/set_new_password", data);
-			resetPasswordState.pending = false;
-			goto(localizeHref("/login"));
-		} catch (e: any) {
-			if (e.response?.data?.error || e.response?.data?.detail) {
-				resetPasswordState.mainError =
-					e.response.data.error || e.response.data.detail;
-			} else {
-				resetPasswordState.error = e.response?.data;
-			}
-		} finally {
-			resetPasswordState.pending = false;
-		}
-	}
+	let code = ["", "", "", ""];
 </script>
 
 <section
@@ -106,21 +32,7 @@
 	<form
 		onsubmit={async (e) => {
 			e.preventDefault();
-			switch (step) {
-				case 1:
-					await sendResetCode({ email });
-					break;
-				case 2:
-					await verifyResetCode({ email, code: code.join("") });
-					break;
-				case 3:
-					await resetPassword({
-						email,
-						password,
-						confirm_password,
-					});
-					break;
-			}
+			await forgotPassword(step, { ...fields, code: code.join("") } as any);
 		}}
 		class="w-full max-w-[520px] px-5 py-10 bg-stone-900/20 backdrop-blur-[10px]"
 	>
@@ -149,7 +61,7 @@
 			{@render navBtn(m.forgot_register_button(), false, "/register")}
 		</div>
 
-		{#if step === 1}
+		{#if $step === 1}
 			<div
 				class="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] max-w-[358px] mx-auto mb-[20px] px-[16px]"
 			>
@@ -161,34 +73,34 @@
 					type="text"
 					placeholder={m.forgot_email_placeholder()}
 					name="email"
-					bind:value={email}
-					bind:err={resetPasswordState.error.email}
+					bind:value={fields.email}
+					bind:err={$errors.email}
 					required
 				/>
 
-				{#if resetPasswordState.mainError}
+				{#if $mainError}
 					<div
 						transition:slide
 						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']"
 					>
-						{resetPasswordState.mainError}
+						{$mainError}
 					</div>
 				{/if}
 
 				<Button
-					disabled={resetPasswordState.pending}
+					disabled={$loading}
 					type="submit"
 					hover
 					c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
 				>
-					{#if resetPasswordState.pending}
+					{#if $loading}
 						{m.forgot_sending_button()}
 					{:else}
 						{m.forgot_send_sms_button()}
 					{/if}
 				</Button>
 			</div>
-		{:else if step === 2}
+		{:else if $step === 2}
 			<div class="max-w-[358px] mx-auto">
 				<div
 					class="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
@@ -220,12 +132,12 @@
 					{/each}
 				</div>
 
-				{#if resetPasswordState.mainError}
+				{#if $mainError}
 					<div
 						transition:slide
 						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mb-[10px]"
 					>
-						{resetPasswordState.mainError}
+						{$mainError}
 					</div>
 				{/if}
 
@@ -236,26 +148,26 @@
 				</div>
 
 				<Button
-					disabled={resetPasswordState.pending}
+					disabled={$loading}
 					type="submit"
 					hover
 					c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
 				>
-					{#if resetPasswordState.pending}
+					{#if $loading}
 						{m.loading()}
 					{:else}
 						{m.login_button()}
 					{/if}
 				</Button>
 			</div>
-		{:else if step === 3}
+		{:else if $step === 3}
 			<div class="max-w-[358px] mx-auto grid gap-[20px]">
 				<LoginField
 					type="password"
 					placeholder={m.forgot_new_password_placeholder()}
 					name="password"
-					bind:value={password}
-					bind:err={resetPasswordState.error.password}
+					bind:value={fields.password}
+					bind:err={$errors.password}
 					required
 				/>
 
@@ -263,27 +175,27 @@
 					type="password"
 					placeholder={m.forgot_confirm_password_placeholder()}
 					name="confirm_password"
-					bind:value={confirm_password}
-					bind:err={resetPasswordState.error.confirm_password}
+					bind:value={fields.confirm_password}
+					bind:err={$errors.confirm_password}
 					required
 				/>
 
-				{#if resetPasswordState.mainError}
+				{#if $mainError}
 					<div
 						transition:slide
 						class="text-red-500 text-sm font-['GT_Eesti_Pro_Display']"
 					>
-						{resetPasswordState.mainError}
+						{$mainError}
 					</div>
 				{/if}
 
 				<Button
-					disabled={resetPasswordState.pending}
+					disabled={$loading}
 					type="submit"
 					hover
 					c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
 				>
-					{#if resetPasswordState.pending}
+					{#if $loading}
 						{m.loading()}
 					{:else}
 						{m.login_button()}

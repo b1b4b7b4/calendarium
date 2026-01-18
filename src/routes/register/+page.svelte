@@ -9,39 +9,14 @@
 	import clsx from "clsx";
 	import { fade, slide } from "svelte/transition";
 	import image1 from "$lib/assets/images/bgs/image1.png";
+	import { useRegisterMutation } from "$lib/hooks.svelte";
 
-	type RegisterData = {
-		email: string;
-		password: string;
-		confirm_password: string;
-	};
-
-	let loginStateInit = {
-		pending: false,
-		error: {
-			email: "",
-			password: "",
-			confirm_password: "",
-		} as RegisterData,
-		mainError: "",
-	};
-	let registerState = $state(loginStateInit);
-	async function registerRequest(data: RegisterData) {
-		try {
-			registerState = { ...loginStateInit, pending: true };
-			const res = await api.post("/user/register", data);
-			registerState.pending = false;
-		} catch (e: any) {
-			if (e.response?.data?.error || e.response?.data?.detail) {
-				registerState.mainError =
-					e.response.data.error || e.response.data.detail;
-			} else {
-				registerState.error = e.response?.data;
-			}
-		} finally {
-			registerState.pending = false;
-		}
-	}
+	const { register, mainError, loading, errors } = useRegisterMutation();
+	const fields = $state({
+		email: "",
+		password: "",
+		confirm_password: "",
+	});
 </script>
 
 <section
@@ -51,12 +26,7 @@
 	<form
 		onsubmit={async (e) => {
 			e.preventDefault();
-			const data = new FormData(e.target as HTMLFormElement);
-			await registerRequest({
-				email: data.get("email") as string,
-				password: data.get("password") as string,
-				confirm_password: data.get("confirmPassword") as string,
-			});
+			await register(fields);
 		}}
 		class="w-full max-w-[520px] px-5 py-10 bg-stone-900/20 backdrop-blur-[10px]"
 	>
@@ -90,7 +60,8 @@
 				type="text"
 				placeholder={m.register_email_placeholder()}
 				name="email"
-				bind:err={registerState.error.email}
+				bind:value={fields.email}
+				bind:err={$errors.email}
 				required
 			/>
 
@@ -98,7 +69,8 @@
 				type="password"
 				placeholder={m.register_password_placeholder()}
 				name="password"
-				bind:err={registerState.error.password}
+				bind:value={fields.password}
+				bind:err={$errors.password}
 				required
 			/>
 
@@ -106,7 +78,8 @@
 				type="password"
 				placeholder={m.register_confirm_placeholder()}
 				name="confirmPassword"
-				bind:err={registerState.error.confirm_password}
+				bind:value={fields.confirm_password}
+				bind:err={$errors.confirm_password}
 				required
 			/>
 
@@ -124,12 +97,12 @@
 			</label>
 
 			<Button
-				disabled={registerState.pending}
+				disabled={$loading}
 				type="submit"
 				hover
 				c="px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"
 			>
-				{#if registerState.pending}
+				{#if $loading}
 					{m.loading()}
 				{:else}
 					{m.register_button()}
@@ -137,12 +110,12 @@
 			</Button>
 		</div>
 
-		{#if registerState.mainError}
+		{#if $mainError}
 			<div
 				transition:slide
 				class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mb-4 text-center"
 			>
-				{registerState.mainError}
+				{$mainError}
 			</div>
 		{/if}
 

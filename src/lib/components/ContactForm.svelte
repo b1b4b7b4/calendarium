@@ -7,15 +7,8 @@
 	import toast from "svelte-french-toast";
 	import consultation from "$lib/assets/images/consultation.png";
 	import { m } from "$lib/paraglide/messages";
+	import { useCreateConsultationMutation } from "$lib/hooks.svelte";
 
-	const contactStatusInit = {
-		name: "",
-		email: "",
-		reason: null,
-		description: "",
-	};
-
-	const contactStates = $state(contactStatusInit);
 	const reasons = [
 		m.contact_reason_general(),
 		m.contact_reason_technical(),
@@ -24,33 +17,14 @@
 		m.contact_reason_other(),
 	];
 
-	let contactStatus = $state({
-		pending: false,
-		error: contactStatusInit,
-		mainError: "",
+	const { mainError, loading, errors, createConsultation } =
+		useCreateConsultationMutation();
+	const fields = $state({
+		name: "",
+		email: "",
+		reason: 0,
+		description: "",
 	});
-
-	async function createConsultation(data: typeof contactStatusInit) {
-		try {
-			contactStatus = {
-				mainError: "",
-				pending: true,
-				error: contactStatusInit,
-			};
-			const res = await api.post("/consultation", data);
-			contactStatus.pending = false;
-			toast.success(m.contact_success_toast());
-		} catch (e: any) {
-			if (e.response?.data?.error || e.response?.data?.detail) {
-				contactStatus.mainError =
-					e.response.data.error || e.response.data.detail;
-			} else {
-				contactStatus.error = e.response?.data;
-			}
-		} finally {
-			contactStatus.pending = false;
-		}
-	}
 </script>
 
 <section class="bg-stone-300" id="consultation">
@@ -64,12 +38,7 @@
 			<form
 				onsubmit={async (e) => {
 					e.preventDefault();
-					await createConsultation({
-						name: contactStates.name,
-						email: contactStates.email,
-						reason: contactStates.reason,
-						description: contactStates.description,
-					});
+					await createConsultation(fields);
 				}}
 			>
 				<div
@@ -88,17 +57,17 @@
 						<input
 							type="text"
 							placeholder={m.contact_name_placeholder()}
-							bind:value={contactStates.name}
+							bind:value={fields.name}
 							required
 							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500"
 						/>
 
-						{#if contactStatus.error.name}
+						{#if $errors.name}
 							<div
 								transition:slide
 								class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
 							>
-								{contactStatus.error.name}
+								{$errors.name}
 							</div>
 						{/if}
 					</div>
@@ -112,17 +81,17 @@
 						<input
 							type="text"
 							placeholder={m.contact_email_placeholder()}
-							bind:value={contactStates.email}
+							bind:value={fields.email}
 							required
 							class="px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500"
 						/>
 
-						{#if contactStatus.error.email}
+						{#if $errors.email}
 							<div
 								transition:slide
 								class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
 							>
-								{contactStatus.error.email}
+								{$errors.email}
 							</div>
 						{/if}
 					</div>
@@ -136,14 +105,14 @@
 					</div>
 					<ReasonSelector
 						options={reasons}
-						bind:selectedOptionIndex={contactStates.reason}
+						bind:selectedOptionIndex={fields.reason}
 					/>
-					{#if contactStatus.error.reason}
+					{#if $errors.reason}
 						<div
 							transition:slide
 							class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
 						>
-							{contactStatus.error.reason}
+							{$errors.reason}
 						</div>
 					{/if}
 				</div>
@@ -157,28 +126,28 @@
 					<textarea
 						placeholder={m.contact_description_placeholder()}
 						required
-						bind:value={contactStates.description}
+						bind:value={fields.description}
 						class=" px-5 py-[16px] bg-white rounded-[10px] placeholder:text-orange-300 text-base font-normal font-['GT_Eesti_Pro_Display'] border-0 w-full focus:ring-2 focus:ring-orange-500 min-h-[133px]"
 					></textarea>
 
-					{#if contactStatus.error.description}
+					{#if $errors.description}
 						<div
 							transition:slide
 							class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
 						>
-							{contactStatus.error.description}
+							{$errors.description}
 						</div>
 					{/if}
 				</div>
 
 				<div class="flex justify-end">
 					<Button
-						disabled={contactStatus.pending}
+						disabled={$loading}
 						type="submit"
 						hover
 						c="text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] min-w-44 px-5 bg-orange-500 rounded-[43px] min-h-[39px]"
 					>
-						{#if contactStatus.pending}
+						{#if $loading}
 							{m.contact_sending()}
 						{:else}
 							{m.contact_send()}

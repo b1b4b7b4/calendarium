@@ -18,78 +18,25 @@
 	import toast from "svelte-french-toast";
 	import { fade, fly, slide } from "svelte/transition";
 	import image from "$lib/assets/images/bgs/image.png";
+	import { useCalculateRequestMutation } from "$lib/hooks.svelte";
+	import { goto } from "$app/navigation";
+	import { localizeHref } from "$lib/paraglide/runtime";
 
-	type BaziResponse = {
-		year: {
-			ganzhi: string;
-			parsed: string;
-		};
-		month: {
-			ganzhi: string;
-			parsed: string;
-		};
-		day: {
-			ganzhi: string;
-			parsed: string;
-		};
-		hour: {
-			ganzhi: string;
-			parsed: string;
-		};
-	};
-
-	const calculatorStateInit = {
-		hour: "",
-		day: "",
-		month: "",
-		year: "",
-		gender: "",
-	};
-
-	let calculatorState = $state({
-		pending: false,
-		error: calculatorStateInit,
-		mainError: "",
-	});
-
+	const { mainError, loading, errors, result, calculate } =
+		useCalculateRequestMutation();
 	const today = new Date();
-
-	let gender = $state(m.male());
 	const dates = $state({
-		hours:
-			today.getHours().toString().padStart(2, "0") +
-			":" +
-			today.getMinutes().toString().padStart(2, "0"),
-		days: today.getDate().toString(),
-		months: (today.getMonth() + 1).toString(),
-		years: today.getFullYear().toString(),
+		hours: `${String(today.getHours()).padStart(2, "0")}:${String(
+			today.getMinutes(),
+		).padStart(2, "0")}`,
+		days: String(today.getDate()).padStart(2, "0"),
+		months: String(today.getMonth() + 1).padStart(2, "0"),
+		years: String(today.getFullYear()),
 	});
 
-	let bazi: Partial<BaziResponse> = $state({});
-
-	async function calcuateRequest(
-		data: Partial<typeof calculatorStateInit & { minute: string }>,
-	) {
-		try {
-			calculatorState = {
-				pending: true,
-				mainError: "",
-				error: calculatorStateInit,
-			};
-			const res = await api.post("/calculator", data);
-			toast.success(m.calculator_save_success_toast());
-			bazi = res.data.bazi;
-		} catch (e: any) {
-			if (e.response?.data?.error || e.response?.data?.detail) {
-				calculatorState.mainError =
-					e.response.data.error || e.response.data.detail;
-			} else {
-				calculatorState.error = e.response?.data;
-			}
-		} finally {
-			calculatorState.pending = false;
-		}
-	}
+	const fields = $state({
+		gender: "Male",
+	});
 </script>
 
 <section
@@ -103,13 +50,13 @@
 				onsubmit={async (e) => {
 					e.preventDefault();
 					const [h, m] = dates.hours.split(":");
-					await calcuateRequest({
+					await calculate({
 						hour: h,
 						minute: m,
 						day: dates.days,
 						month: dates.months,
 						year: dates.years,
-						gender,
+						gender: fields.gender,
 					});
 				}}
 			>
@@ -127,7 +74,7 @@
 				<div class="mb-[20px]">
 					<ReasonSelector
 						options={[m.male(), m.female()]}
-						selectedOption={gender}
+						bind:selectedOption={fields.gender}
 					/>
 				</div>
 
@@ -158,27 +105,39 @@
 					/>
 				</div>
 
-				<div class="flex justify-center mb-[16px]">
+				<div class="flex justify-center mb-[16px] gap-3">
 					<Button
-						disabled={calculatorState.pending}
+						disabled={$loading}
 						type="submit"
 						hover
 						c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
 					>
-						{#if calculatorState.pending}
-							{m.calculator_saving()}
+						{#if $loading}
+							Calculating...
 						{:else}
-							{m.calculator_save()}
+							Calculate
 						{/if}
 					</Button>
+
+					{#if $result}
+						<Button
+							onclick={() => {
+								goto(localizeHref("/calculator/create"));
+							}}
+							hover
+							c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
+						>
+							Create client
+						</Button>
+					{/if}
 				</div>
 
-				{#if calculatorState.mainError}
+				{#if $mainError}
 					<div
 						transition:slide
 						class="text-red-500 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mb-[16px]"
 					>
-						{calculatorState.mainError}
+						{$mainError}
 					</div>
 				{/if}
 
@@ -197,24 +156,26 @@
 			</form>
 		</div>
 
-		<div class="flex gap-2">
-			{#each Object.entries(bazi) as [key, value], idx (key)}
-				<div
-					in:slide|global={{ delay: 30 * idx }}
-					class="mt-[20px] p-[16px] bg-stone-300"
-				>
+		{#if $result}
+			<div class="flex gap-2">
+				{#each Object.entries($result) as [key, value], idx (key)}
 					<div
-						class="text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[8px]"
+						in:slide|global={{ delay: 30 * idx }}
+						class="mt-[20px] p-[16px] bg-stone-300"
 					>
-						{value.ganzhi}
+						<div
+							class="text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[8px]"
+						>
+							{value.ganzhi}
+						</div>
+						<div
+							class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
+						>
+							{value.parsed}
+						</div>
 					</div>
-					<div
-						class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
-					>
-						{value.parsed}
-					</div>
-				</div>
-			{/each}
-		</div>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </section>

@@ -11,38 +11,14 @@
 	import { fade, slide } from "svelte/transition";
 	import { m } from "$lib/paraglide/messages";
 	import { localizeHref } from "$lib/paraglide/runtime";
+	import { useLoginMutation } from "$lib/hooks.svelte";
 
-	type LoginData = {
-		email: string;
-		password: string;
-	};
+	const { mainError, login, loading, errors } = useLoginMutation();
 
-	let loginStateInit = {
-		pending: false,
-		error: {
-			email: "",
-			password: "",
-		} as LoginData,
-		mainError: "",
-	};
-	let loginState = $state(loginStateInit);
-	async function loginRequest(data: LoginData) {
-		try {
-			loginState = { ...loginStateInit, pending: true };
-			const res = await api.post("/user/login", data);
-			loginState.pending = false;
-			await saveSession(res.data);
-			goto(localizeHref(page.url.searchParams.get("redi") || "/"));
-		} catch (e: any) {
-			if (e.response?.data?.error || e.response?.data?.detail) {
-				loginState.mainError = e.response.data.error || e.response.data.detail;
-			} else {
-				loginState.error = e.response?.data;
-			}
-		} finally {
-			loginState.pending = false;
-		}
-	}
+	const fields = $state({
+		email: "",
+		password: "",
+	});
 </script>
 
 <section
@@ -53,12 +29,7 @@
 		class="w-full max-w-[520px] px-5 py-10 bg-stone-900/20 backdrop-blur-[10px]"
 		onsubmit={async (e) => {
 			e.preventDefault();
-			const formData = new FormData(e.target as HTMLFormElement);
-			const data: LoginData = {
-				email: formData.get("email") as string,
-				password: formData.get("password") as string,
-			};
-			await loginRequest(data);
+			await login(fields);
 		}}
 	>
 		<div class="mb-[26px] flex justify-center">
@@ -90,26 +61,28 @@
 			<LoginField
 				type="text"
 				placeholder={m.email_placeholder()}
+				bind:value={fields.email}
+				bind:err={$errors.email}
 				name="email"
-				bind:err={loginState.error.email}
 				required
 			/>
 
 			<LoginField
 				type="password"
 				placeholder={m.password_placeholder()}
+				bind:value={fields.password}
+				bind:err={$errors.password}
 				name="password"
-				bind:err={loginState.error.password}
 				required
 			/>
 
 			<Button
-				disabled={loginState.pending}
+				disabled={$loading}
 				type="submit"
 				hover
 				c={"px-2.5 min-h-[46px] bg-orange-500 rounded-xl text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full"}
 			>
-				{#if loginState.pending}
+				{#if $loading}
 					{m.login_loading()}
 				{:else}
 					{m.login_button()}
@@ -117,12 +90,12 @@
 			</Button>
 		</div>
 
-		{#if loginState.mainError}
+		{#if $mainError}
 			<div
 				transition:slide
 				class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mb-4 text-center"
 			>
-				{loginState.mainError}
+				{$mainError}
 			</div>
 		{/if}
 
