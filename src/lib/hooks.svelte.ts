@@ -273,6 +273,7 @@ export const useCreateClientMutation = () => {
 		email: "",
 		phone_number: "",
 		address: "",
+		country: "",
 		remark: "",
 	})
 	const mainError = writable("")
@@ -284,13 +285,18 @@ export const useCreateClientMutation = () => {
 		errors.set({
 			name: "",
 			email: "",
-			phone: "",
+			phone_number: "",
+			gender: "",
+			date_of_birth: "",
+			address: "",
+			country: "",
+			remark: "",
 		})
 		mainError.set("")
 
 		try {
 			await api.post("/client", data);
-			toast.success(m.calculator_save_success_toast());
+			toast.success(m.calculator_data_saved_toast());
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				mainError.set(e.response.data.error || e.response.data.detail);

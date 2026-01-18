@@ -122,7 +122,18 @@
 					{#if $result}
 						<Button
 							onclick={() => {
-								goto(localizeHref("/calculator/create"));
+								goto(
+									localizeHref(
+										"/calculator/create?" +
+											new URLSearchParams({
+												hour: dates.hours,
+												day: dates.days,
+												month: dates.months,
+												year: dates.years,
+												gender: fields.gender,
+											}).toString(),
+									),
+								);
 							}}
 							hover
 							c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"

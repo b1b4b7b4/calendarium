@@ -12,70 +12,30 @@
 	import Button from "$lib/components/Button.svelte";
 	import DateField from "$lib/components/DateField.svelte";
 	import ReasonSelector from "$lib/components/ReasonSelector.svelte";
-	import type { Client } from "$lib/types";
-	import { imask } from "@imask/svelte";
-	import type { AxiosError } from "axios";
-	import { onMount } from "svelte";
-	import toast from "svelte-french-toast";
 	import { fade, fly, slide } from "svelte/transition";
 	import CalculatorField from "$lib/components/calculatorField.svelte";
+	import { useCreateClientMutation } from "$lib/hooks.svelte";
+	import { page } from "$app/state";
 
-	const calculatorStateInit = {
-		date_of_birth: "",
-		gender: "",
+	const { loading, errors, createClient, mainError } =
+		useCreateClientMutation();
+
+	const fields = $state({
 		name: "",
-		country: "",
 		email: "",
 		phone_number: "",
 		address: "",
-		remarks: "",
-	};
-
-	let calculatorState = $state({
-		pending: false,
-		error: calculatorStateInit,
-		mainError: "",
-	});
-
-	let gender = $state("male");
-	const dates = $state({
-		hours: "22:22",
-		days: "12",
-		months: "12",
-		years: "2025",
-	});
-
-	const infoFields = $state({
-		name: "",
 		country: "",
-		email: "",
-		phone_number: "",
-		address: "",
 		remark: "",
+		gender: page.url.searchParams.get("gender") || "",
 	});
 
-	async function createClientRequest(
-		data: Partial<typeof calculatorStateInit>,
-	) {
-		try {
-			calculatorState = {
-				pending: true,
-				mainError: "",
-				error: calculatorStateInit,
-			};
-			const res = await api.post("/client", data);
-			toast.success(m.calculator_data_saved_toast());
-		} catch (e: any) {
-			if (e.response?.data?.error || e.response?.data?.detail) {
-				calculatorState.mainError =
-					e.response.data.error || e.response.data.detail;
-			} else {
-				calculatorState.error = e.response?.data;
-			}
-		} finally {
-			calculatorState.pending = false;
-		}
-	}
+	const dates = $state({
+		hours: page.url.searchParams.get("hour") || "",
+		days: page.url.searchParams.get("day") || "",
+		months: page.url.searchParams.get("month") || "",
+		years: page.url.searchParams.get("year") || "",
+	});
 </script>
 
 <section
@@ -87,10 +47,10 @@
 			class="bg-stone-300 p-[16px]"
 			onsubmit={async (e) => {
 				e.preventDefault();
-				await createClientRequest({
+				await createClient({
+					...fields,
+					gender: fields.gender.toLowerCase(),
 					date_of_birth: `${dates.years}-${dates.months}-${dates.days}`,
-					...infoFields,
-					gender,
 				});
 			}}
 		>
@@ -108,7 +68,7 @@
 			<div class="mb-[20px]">
 				<ReasonSelector
 					options={[m.male(), m.female()]}
-					selectedOption={gender}
+					bind:selectedOption={fields.gender}
 				/>
 			</div>
 
@@ -141,61 +101,61 @@
 
 			<CalculatorField
 				type="text"
-				bind:value={infoFields.name}
+				bind:value={fields.name}
 				placeholder={m.name_placeholder()}
-				error={calculatorState.error.name}
+				error={$errors.name}
 				required
 			/>
 
 			<CalculatorField
 				type="email"
-				bind:value={infoFields.email}
+				bind:value={fields.email}
 				placeholder={m.create_email_placeholder()}
-				error={calculatorState.error.email}
+				error={$errors.email}
 				required
 			/>
 
 			<CalculatorField
 				type="text"
-				bind:value={infoFields.phone_number}
+				bind:value={fields.phone_number}
 				placeholder={m.create_phone_placeholder()}
-				error={calculatorState.error.phone_number}
+				error={$errors.phone_number}
 				required
 				mask={{ mask: "+00000000000", lazy: true }}
 			/>
 
 			<CalculatorField
 				type="text"
-				bind:value={infoFields.address}
+				bind:value={fields.address}
 				placeholder={m.create_address_placeholder()}
-				error={calculatorState.error.address}
+				error={$errors.address}
 				required
 			/>
 
 			<CalculatorField
 				type="text"
-				bind:value={infoFields.country}
+				bind:value={fields.country}
 				placeholder={m.create_country_placeholder()}
-				error={calculatorState.error.country}
+				error={$errors.country}
 				required
 			/>
 
 			<CalculatorField
 				type="text"
-				bind:value={infoFields.remark}
+				bind:value={fields.remark}
 				placeholder={m.create_remarks_placeholder()}
-				error={calculatorState.error.remarks}
+				error={$errors.remark}
 				required
 			/>
 
 			<div class="flex justify-center mb-[16px]">
 				<Button
-					disabled={calculatorState.pending}
+					disabled={$loading}
 					type="submit"
 					hover
 					c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
 				>
-					{#if calculatorState.pending}
+					{#if $loading}
 						{m.calculator_saving()}
 					{:else}
 						{m.calculator_save()}
@@ -203,12 +163,12 @@
 				</Button>
 			</div>
 
-			{#if calculatorState.mainError}
+			{#if $mainError}
 				<div
 					transition:slide
 					class="text-red-500 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mb-[16px]"
 				>
-					{calculatorState.mainError}
+					{$mainError}
 				</div>
 			{/if}
 
