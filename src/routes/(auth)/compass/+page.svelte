@@ -325,7 +325,7 @@
 		</div>
 	{/if}
 
-	<div class="flex-1 w-full h-[calc(100svh-100px)]">
+	<div class="flex-1 w-full h-[calc(100svh-100px)] isolate">
 		{#if compassItems[selectedCompass] && settingsItems[0].state}
 			<button
 				transition:fly={{ y: 10, duration: 500 }}
