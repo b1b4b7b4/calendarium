@@ -4,15 +4,24 @@
 	import Button from "./Button.svelte";
 	import { clsx } from "clsx";
 	import { m } from "$lib/paraglide/messages";
+	import { useReasonsQuery, type Reason } from "$lib/hooks.svelte";
+
+	type Props = {
+		options?: Reason[];
+		placeholder?: string;
+		selectedOptionId?: number;
+		selectedOptionReason?: string;
+		selectedOptionIndex?: number;
+	};
 
 	let {
-		options = [m.reason_option_1(), m.reason_option_2(), m.reason_option_3()],
+		options = $bindable([]),
 		placeholder = m.reason_default_placeholder(),
-		selectedOption = $bindable(null),
-		selectedOptionIndex = $bindable(null),
-	} = $props();
+		selectedOptionId = $bindable(),
+		selectedOptionReason = $bindable(),
+		selectedOptionIndex = $bindable(),
+	}: Props = $props();
 
-	// let selectedOption = $state<string | null>(null);
 	let active = $state(false);
 	let dropdown: HTMLDivElement;
 </script>
@@ -22,7 +31,7 @@
 		type="text"
 		required
 		name="reason"
-		value={selectedOption ?? ""}
+		bind:value={selectedOptionId}
 		class="opacity-0 absolute pointer-events-none inset-0"
 	/>
 
@@ -34,8 +43,8 @@
 			active && "ring-2 ring-orange-500",
 		)}
 	>
-		{#if selectedOption}
-			<span>{selectedOption}</span>
+		{#if selectedOptionReason}
+			<span>{selectedOptionReason}</span>
 		{:else}
 			<span class="text-orange-300">{placeholder}</span>
 		{/if}
@@ -61,10 +70,11 @@
 					type="button"
 					class="text-left w-full cursor-pointer py-1"
 					onclick={() => {
-						selectedOption = option;
+						selectedOptionId = option.id;
+						selectedOptionReason = option.reason;
 						selectedOptionIndex = idx;
 						active = false;
-					}}>{option}</button
+					}}>{option.reason}</button
 				>
 			{/each}
 		</div>

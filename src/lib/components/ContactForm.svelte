@@ -7,15 +7,11 @@
 	import toast from "svelte-french-toast";
 	import consultation from "$lib/assets/images/consultation.png";
 	import { m } from "$lib/paraglide/messages";
-	import { useCreateConsultationMutation } from "$lib/hooks.svelte";
-
-	const reasons = [
-		m.contact_reason_general(),
-		m.contact_reason_technical(),
-		m.contact_reason_billing(),
-		m.contact_reason_feedback(),
-		m.contact_reason_other(),
-	];
+	import {
+		useCreateConsultationMutation,
+		useReasonsQuery,
+		type Reason,
+	} from "$lib/hooks.svelte";
 
 	const { mainError, loading, errors, createConsultation } =
 		useCreateConsultationMutation();
@@ -25,6 +21,8 @@
 		reason: 0,
 		description: "",
 	});
+
+	const { loading: reasonsLoading, reasons } = useReasonsQuery();
 </script>
 
 <section class="bg-stone-300" id="consultation">
@@ -36,9 +34,11 @@
 		/>
 		<div class="p-[60px] flex flex-col justify-center">
 			<form
-				onsubmit={async (e) => {
+				onsubmit={async (e: any) => {
 					e.preventDefault();
-					await createConsultation(fields);
+					if (await createConsultation(fields)) {
+						e.target.reset();
+					}
 				}}
 			>
 				<div
@@ -103,10 +103,16 @@
 					>
 						{m.contact_reason_label()}
 					</div>
-					<ReasonSelector
-						options={reasons}
-						bind:selectedOptionIndex={fields.reason}
-					/>
+					{#if $reasonsLoading}
+						<div
+							class="bg-stone-100 animate-pulse rounded-lg w-full h-[55px]"
+						></div>
+					{:else}
+						<ReasonSelector
+							options={$reasons}
+							bind:selectedOptionId={fields.reason}
+						/>
+					{/if}
 					{#if $errors.reason}
 						<div
 							transition:slide

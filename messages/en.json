@@ -188,5 +188,10 @@
 	"client_phone_label": "Phone",
 	"client_address_label": "Address",
 	"client_country_label": "Country",
-	"client_remarks_label": "Remarks"
+	"client_remarks_label": "Remarks",
+  "Общий запрос": "General Inquiry",
+	"Техническая поддержка": "Tech Support",
+	"Оплата": "Payment",
+	"Обратная связь": "Feedback",
+	"Другое": "Other",
 }

@@ -2,27 +2,37 @@
 	import { selectedMapCoords } from "$lib";
 	import { onMount } from "svelte";
 	import { m } from "$lib/paraglide/messages";
+	import { on } from "svelte/events";
 
 	let mapBlock: HTMLDivElement;
+
 	onMount(() => {
 		// @ts-ignore
 		const L = window.L;
+		const initMap = () => {
+			const map = L.map(mapBlock, {
+				center: $selectedMapCoords,
+				zoom: 13,
+			});
 
-		const map = L.map(mapBlock, {
-			center: $selectedMapCoords,
-			zoom: 13,
-		});
+			L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+				maxZoom: 19,
+				attribution: m.map_copyright(),
+			}).addTo(map);
 
-		L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-			maxZoom: 19,
-			attribution: m.map_copyright(),
-		}).addTo(map);
+			selectedMapCoords.subscribe((coords) => {
+				if (map) {
+					map.setView(coords, map.getZoom());
+				}
+			});
+		};
 
-		selectedMapCoords.subscribe((coords) => {
-			if (map) {
-				map.setView(coords, map.getZoom());
-			}
-		});
+		if (L) {
+			initMap();
+		} else {
+			const script = document.querySelector('script[src*="leaflet"]');
+			script?.addEventListener("load", initMap);
+		}
 	});
 </script>
 

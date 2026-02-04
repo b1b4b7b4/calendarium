@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		api,
+		currentSession,
 		debounce,
 		locationSuggestionApi,
 		selectedMapCoords,
@@ -84,7 +85,11 @@
 	onMount(async () => {
 		try {
 			composiState.pending = true;
-			const res = await api.get("/compass");
+			// const res = await api.get("/compass");
+			// const res = await api.get(
+			// 	"/compass/by-client/" + "25e7c8b2-bdea-4923-ba8a-bfe928b5af91",
+			// );
+			// const res = await api.get("client");
 		} catch (e: any) {
 			composiState.error = e.response?.data?.error || e.response?.data?.detail;
 		} finally {

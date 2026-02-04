@@ -175,6 +175,7 @@ export const useCreateConsultationMutation = () => {
 		try {
 			await api.post("/consultation", data);
 			toast.success(m.contact_success_toast());
+			return true;
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				mainError.set(e.response.data.error || e.response.data.detail);
@@ -313,5 +314,49 @@ export const useCreateClientMutation = () => {
 		errors,
 		mainError,
 		createClient
+	}
+}
+
+
+// {
+//    "id": 5,
+//    "reason": "Другое"
+//  }
+
+
+export type Reason = {
+	id: number;
+	reason: string;
+}
+export const useReasonsQuery = () => {
+	const reasons = writable<Reason[]>([])
+	const loading = writable(false)
+	const mainError = writable("")
+
+	const fetchReasons = async () => {
+		try {
+			const res = await api.get("/reason");
+			reasons.set(res.data);
+		} catch (e: any) {
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				mainError.set(e.response.data.error || e.response.data.detail);
+			} else {
+				mainError.set(e.response?.data);
+			}
+		} finally {
+			loading.set(false)
+		}
+	}
+
+
+	$effect(() => {
+		fetchReasons();
+	});
+
+	return {
+		reasons,
+		fetchReasons,
+		mainError,
+		loading
 	}
 }
