@@ -44,9 +44,11 @@
 	class="min-h-[calc(100svh-80px)] flex items-start justify-center pt-[40px] px-4 bg-no-repeat bg-center bg-cover"
 	style={`background-image: url(${image});`}
 >
-	<div class="flex flex-col items-center gap-[20px]">
-		<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px] max-w-[500px]">
-			<div class="bg-stone-300 p-[16px]">
+	<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px]">
+		<div
+			class="grid grid-cols-[auto_auto] items-center gap-[20px] bg-stone-300 pr-[20px] py-[16px]"
+		>
+			<div class="p-[16px] max-w-[400px]">
 				<div class="flex justify-between items-center mb-[16px]">
 					<div
 						class="w-96 justify-start text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display']"
@@ -149,14 +151,13 @@
 					</Button>
 				</div>
 			</div>
+			<BaziBlock
+				bind:ref={baziBlockRef}
+				hours={dates.hours}
+				days={dates.days}
+				months={dates.months}
+				years={dates.years}
+			/>
 		</div>
-
-		<BaziBlock
-			bind:ref={baziBlockRef}
-			hours={dates.hours}
-			days={dates.days}
-			months={dates.months}
-			years={dates.years}
-		/>
 	</div>
 </section>

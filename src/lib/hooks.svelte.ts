@@ -6,7 +6,7 @@ import { get, writable, type Writable } from "svelte/store"
 import { localizeHref } from "$lib/paraglide/runtime";
 import toast from "svelte-french-toast";
 import { m, phone_number } from "$lib/paraglide/messages";
-import type { Bazi } from "./types";
+import type { Bazi, Client } from "./types";
 
 
 export const useLoginMutation = () => {
@@ -305,21 +305,29 @@ export const useCreateClientMutation = () => {
 //    "id": 5,
 //    "reason": "Другое"
 //  }
-
-
 export type Reason = {
 	id: number;
 	reason: string;
 }
-export const useReasonsQuery = () => {
-	const reasons = writable<Reason[]>([])
+
+
+export const useClientsQuery = () => {
+	const clients = writable<Client[]>([])
 	const loading = writable(false)
 	const mainError = writable("")
+	const searchQuery = writable("")
+	const selectedClient = writable<Client | null>(null)
 
-	const fetchReasons = async () => {
+	async function fetchClients() {
 		try {
-			const res = await api.get("/reason");
-			reasons.set(res.data);
+			loading.set(true)
+			const res = await api("/clients", {
+				params: {
+					query: get(searchQuery)
+				}
+			});
+			clients.set(res.data.data);
+			selectedClient.set(res.data.data[0]);
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				mainError.set(e.response.data.error || e.response.data.detail);
@@ -331,15 +339,21 @@ export const useReasonsQuery = () => {
 		}
 	}
 
-
 	$effect(() => {
-		fetchReasons();
+		fetchClients();
 	});
 
+	searchQuery.subscribe((value) => {
+		fetchClients();
+	})
+
+
 	return {
-		reasons,
-		fetchReasons,
+		clients,
+		fetchClients,
 		mainError,
-		loading
+		loading,
+		searchQuery,
+		selectedClient
 	}
 }

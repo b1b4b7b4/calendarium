@@ -9,7 +9,6 @@
 	import { contact_reason_billing, m } from "$lib/paraglide/messages";
 	import {
 		useCreateConsultationMutation,
-		useReasonsQuery,
 		type Reason,
 	} from "$lib/hooks.svelte";
 	import {

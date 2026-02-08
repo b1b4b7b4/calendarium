@@ -9,7 +9,7 @@
 		ref = $bindable(null),
 	} = $props();
 
-	const result = $derived.by(() => {
+	const result: any = $derived.by(() => {
 		const [hour, minute] = hours.split(":");
 		return calculateBazi({
 			year: Number(years),
@@ -23,7 +23,13 @@
 	const items = ["hour", "day", "month", "year"];
 </script>
 
-{#snippet BaziBlock(a, b, c, d, src = "https://placehold.co/80x80")}
+{#snippet BaziBlock(
+	a: any,
+	b: any,
+	c: any,
+	d: any,
+	src = "https://placehold.co/80x80",
+)}
 	<div class="border-[0.50px] border-orange-500 min-w-[120px]">
 		<div
 			class="px-4 py-2 flex justify-between border-b-[0.50px] border-orange-500"

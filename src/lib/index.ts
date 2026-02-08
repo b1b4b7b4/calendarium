@@ -170,3 +170,7 @@ export async function captureBlock(ref: HTMLElement, filename = 'capture') {
 	};
 	return { dataUrl, copyToClipboard, downloadImage };
 }
+
+
+export const areYouSureContinue = writable(() => { })
+export const areYouSureModalActive = writable(false)

@@ -11,6 +11,8 @@
 	import FileIcon from "$lib/assets/fileIcon.svelte";
 	import ShareIcon from "$lib/assets/shareIcon.svelte";
 	import { captureBlock } from "$lib";
+	import { localizeHref } from "$lib/paraglide/runtime";
+	import { goto } from "$app/navigation";
 
 	const today = new Date();
 	const currentYear = today.getFullYear();
@@ -297,6 +299,28 @@
 						months={dates.months}
 						years={dates.years}
 					/>
+
+					<div class="flex justify-center gap-[20px]">
+						<Button
+							onclick={() => {
+								goto(
+									localizeHref(
+										"/clients?" +
+											new URLSearchParams({
+												hour: dates.hours,
+												day: dates.days,
+												month: dates.months,
+												year: dates.years,
+											} as any).toString(),
+									),
+								);
+							}}
+							hover
+							c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px] mt-8"
+						>
+							Attach to client
+						</Button>
+					</div>
 
 					<div class="flex justify-center gap-[20px] mt-10">
 						<div

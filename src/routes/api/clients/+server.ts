@@ -2,7 +2,7 @@ import { db } from "$lib/server/db";
 import { clients } from "$lib/server/db/schema";
 import { json, type RequestHandler } from "@sveltejs/kit";
 import { z } from "zod";
-import { and, eq, like } from "drizzle-orm";
+import { and, eq, like, or } from "drizzle-orm";
 import { validate, errorResponse, successResponse } from "$lib/server/validation";
 
 export const GET: RequestHandler = async ({ cookies, url }) => {
@@ -26,7 +26,10 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
 		const clientsList = await db.select().from(clients).where(
 			and(
 				eq(clients.userId, Number(userId)),
-				query ? like(clients.name, `%${query}%`) : undefined
+				or(
+					query ? like(clients.name, `%${query}%`) : undefined,
+					query ? like(clients.email, `%${query}%`) : undefined
+				)
 			)
 		);
 

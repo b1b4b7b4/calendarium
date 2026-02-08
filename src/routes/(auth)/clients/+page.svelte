@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { api } from "$lib";
+	import {
+		api,
+		areYouSureContinue,
+		areYouSureModalActive,
+		debounce,
+	} from "$lib";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
 	import ArrowRightIcon from "$lib/assets/arrowRightIcon.svelte";
@@ -15,29 +20,52 @@
 	import { LucideAlignEndVertical } from "@lucide/svelte";
 	import EditIcon from "$lib/assets/editIcon.svelte";
 	import BinIcon from "$lib/assets/BinIcon.svelte";
+	import { useClientsQuery } from "$lib/hooks.svelte";
+	import BaziBlock from "$lib/components/BaziBlock.svelte";
 
-	let searchQuery = $state("");
+	const {
+		clients,
+		fetchClients,
+		mainError,
+		loading,
+		searchQuery,
+		selectedClient,
+	} = useClientsQuery();
 
-	let clientsState = $state({
-		clients: [] as Client[],
-		loading: true,
+	let { years, months, days, hours } = $derived.by(() => {
+		const d = new Date($selectedClient?.date_of_birth ?? new Date());
+		return {
+			years: d.getFullYear(),
+			months: d.getMonth() + 1,
+			days: d.getDate(),
+			hours: `${String(d.getHours()).padStart(2, "0")}:${String(
+				d.getMinutes(),
+			).padStart(2, "0")}`,
+		};
 	});
-	let selectedClient: Client | null = $state(null);
 
-	async function fetchClients() {
-		const res = await api("/client");
-		await new Promise((r) => setTimeout(r, 1000));
-		clientsState.loading = false;
-		if (res.status !== 200) {
-			toast.error(m.clients_load_error_toast());
-		} else {
-			clientsState.clients = res.data;
-		}
-	}
+	// let searchQuery = $state("");
 
-	onMount(async () => {
-		await fetchClients();
-	});
+	// let clientsState = $state({
+	// 	clients: [] as Client[],
+	// 	loading: true,
+	// });
+	// let selectedClient: Client | null = $state(null);
+
+	// async function fetchClients() {
+	// 	const res = await api("/clients");
+	// 	await new Promise((r) => setTimeout(r, 1000));
+	// 	clientsState.loading = false;
+	// 	if (res.status !== 200) {
+	// 		toast.error(m.clients_load_error_toast());
+	// 	} else {
+	// 		clientsState.clients = res.data;
+	// 	}
+	// }
+	//
+	// onMount(async () => {
+	// 	await fetchClients();
+	// });
 </script>
 
 <section
@@ -54,16 +82,17 @@
 				>
 					<SearchIcon />
 					<input
-						bind:value={searchQuery}
 						type="text"
+						value={$searchQuery}
 						class="ring-0 border-0 bg-transparent text-stone-950 text-base font-normal font-['GT_Eesti_Pro_Display'] p-0"
+						oninput={debounce((e: any) => searchQuery.set(e.target.value), 500)}
 					/>
 				</label>
-				{#if searchQuery.length > 0}
+				{#if $searchQuery.length > 0}
 					<div transition:slide={{ duration: 250, axis: "x" }}>
 						<Button
 							hover
-							onclick={() => (searchQuery = "")}
+							onclick={() => searchQuery.set("")}
 							c="w-full justify-center text-white text-base font-medium font-['GT_Eesti_Pro_Display']"
 							>{m.cancel_button()}</Button
 						>
@@ -71,7 +100,7 @@
 				{/if}
 			</div>
 
-			{#if clientsState.loading}
+			{#if $loading}
 				<div
 					class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mt-2 grid gap-[10px]"
 				>
@@ -102,7 +131,7 @@
 						</div>
 					{/each}
 				</div>
-			{:else if clientsState.clients.length === 0}
+			{:else if $clients.length === 0}
 				<div
 					in:slide={{ duration: 500 }}
 					class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mt-2"
@@ -111,43 +140,39 @@
 				</div>
 			{:else}
 				<div class="grid gap-[10px]">
-					{#each clientsState.clients as client, idx (idx)}
-						{#if client.name.includes(searchQuery) || client.email.includes(searchQuery)}
-							<div
-								in:slide|global={{ delay: idx * 33 }}
-								out:fade|global={{ duration: 100 }}
+					{#each $clients as client, idx (idx)}
+						<div
+							in:slide|global={{ delay: idx * 33 }}
+							out:fade|global={{ duration: 100 }}
+						>
+							<Button
+								onclick={() => selectedClient.set(client)}
+								hover
+								c="border-b border-orange-100 py-[6px] flex items-center justify-between w-full text-left"
 							>
-								<Button
-									onclick={() => (selectedClient = client)}
-									hover
-									c="border-b border-orange-100 py-[6px] flex items-center justify-between w-full text-left"
-								>
-									<div>
-										<div
-											class="text-orange-500 text-xs font-normal font-['GT_Eesti_Pro_Display'] mb-[3px]"
-										>
-											{new Date(client.date_of_birth).toLocaleDateString(
-												"ru-RU",
-											)}
-										</div>
-										<div
-											class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display']"
-										>
-											{client.email}
-										</div>
+								<div>
+									<div
+										class="text-orange-500 text-xs font-normal font-['GT_Eesti_Pro_Display'] mb-[3px]"
+									>
+										{new Date(client.date_of_birth).toLocaleDateString("ru-RU")}
 									</div>
-									<div>
-										<SuperArrowRight />
+									<div
+										class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display']"
+									>
+										{client.email}
 									</div>
-								</Button>
-							</div>
-						{/if}
+								</div>
+								<div>
+									<SuperArrowRight />
+								</div>
+							</Button>
+						</div>
 					{/each}
 				</div>
 			{/if}
 		</div>
 
-		{#if selectedClient}
+		{#if $selectedClient}
 			<div
 				transition:slide={{ axis: "x", duration: 300 }}
 				class="min-w-[649px] p-[20px] bg-stone-900 rounded-t-[20px] mt-2"
@@ -161,10 +186,24 @@
 						<div
 							class="justify-start text-stone-900 text-xl font-normal font-['GT_Eesti_Pro_Display']"
 						>
-							{selectedClient.name}
+							{$selectedClient?.name}
 						</div>
 
-						<Button hover c="justify-self-end">
+						<Button
+							hover
+							c="justify-self-end hover:text-red-500"
+							onclick={() => {
+								areYouSureModalActive.set(true);
+								areYouSureContinue.set(async () => {
+									await api.delete("/clients", {
+										params: {
+											id: $selectedClient?.id,
+										},
+									});
+									await fetchClients();
+								});
+							}}
+						>
 							<BinIcon />
 						</Button>
 					</div>
@@ -184,18 +223,24 @@
 						</div>
 					{/snippet}
 
-					{@render RowBlock(m.client_email_label(), selectedClient.email)}
+					{@render RowBlock(m.client_email_label(), $selectedClient?.email)}
 					{@render RowBlock(
 						m.client_date_of_birth_label(),
-						new Date(selectedClient.date_of_birth).toLocaleDateString("ru-RU"),
+						new Date($selectedClient?.date_of_birth).toLocaleDateString(
+							"ru-RU",
+						),
 					)}
 					{@render RowBlock(
 						m.client_phone_label(),
-						selectedClient.phone_number,
+						$selectedClient?.phone_number,
 					)}
-					{@render RowBlock(m.client_address_label(), selectedClient.address)}
-					{@render RowBlock(m.client_country_label(), selectedClient.country)}
-					{@render RowBlock(m.client_remarks_label(), selectedClient.remark)}
+					{@render RowBlock(m.client_address_label(), $selectedClient?.address)}
+					{@render RowBlock(m.client_country_label(), $selectedClient?.country)}
+					{@render RowBlock(m.client_remarks_label(), $selectedClient?.remark)}
+
+					<div class=" mt-10">
+						<BaziBlock {hours} {years} {months} {days} />
+					</div>
 				</div>
 			</div>
 		{/if}

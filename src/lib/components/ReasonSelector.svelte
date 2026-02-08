@@ -4,7 +4,7 @@
 	import Button from "./Button.svelte";
 	import { clsx } from "clsx";
 	import { m } from "$lib/paraglide/messages";
-	import { useReasonsQuery, type Reason } from "$lib/hooks.svelte";
+	import type { Reason } from "$lib/hooks.svelte";
 
 	type Props = {
 		options?: Reason[];
