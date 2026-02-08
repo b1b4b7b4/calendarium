@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { page } from "$app/state";
-	import { api, saveSession } from "$lib";
+	import { api } from "$lib";
 	import image1 from "$lib/assets/images/bgs/image1.png";
 	import LoginField from "$lib/assets/LoginField.svelte";
 	import ProfileIcon from "$lib/assets/profileIcon.svelte";

@@ -1,11 +1,12 @@
-import { goto } from "$app/navigation";
+import { goto, invalidateAll } from "$app/navigation";
 import { page } from "$app/state";
-import { api, saveSession } from "$lib";
+import { api } from "$lib";
 import { error } from "@sveltejs/kit"
 import { get, writable, type Writable } from "svelte/store"
 import { localizeHref } from "$lib/paraglide/runtime";
 import toast from "svelte-french-toast";
 import { m, phone_number } from "$lib/paraglide/messages";
+import type { Bazi } from "./types";
 
 
 export const useLoginMutation = () => {
@@ -32,9 +33,10 @@ export const useLoginMutation = () => {
 			})
 			mainError.set("")
 
-			const res = await api.post("/user/login", data);
-			await saveSession(res.data);
-			goto(localizeHref(page.url.searchParams.get("redi") || "/"));
+			const res = await api.post("/auth/login", data);
+			goto(localizeHref(page.url.searchParams.get("redi") || "/"), {
+				invalidateAll: true,
+			})
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				mainError.set(e.response.data.error || e.response.data.detail);
@@ -129,9 +131,8 @@ export const useRegisterMutation = () => {
 		mainError.set("")
 
 		try {
-			const res = await api.post("/user/register", data);
-			await saveSession(res.data);
-			goto(localizeHref("/"));
+			const res = await api.post("/auth/register", data);
+			goto(localizeHref("/"), { invalidateAll: true });
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {
 				mainError.set(e.response.data.error || e.response.data.detail);
@@ -162,7 +163,7 @@ export const useCreateConsultationMutation = () => {
 	})
 	const mainError = writable("")
 
-	const createConsultation = async (data: { name: string, email: string, reason: number, description: string }) => {
+	const createConsultation = async (data: { name: string, email: string, reason: string, description: string }) => {
 		loading.set(true)
 		errors.set({
 			name: "",
@@ -209,27 +210,9 @@ export const useCalculateRequestMutation = () => {
 
 	const mainError = writable("")
 
-	type BaziResponse = {
-		year: {
-			ganzhi: string;
-			parsed: string;
-		};
-		month: {
-			ganzhi: string;
-			parsed: string;
-		};
-		day: {
-			ganzhi: string;
-			parsed: string;
-		};
-		hour: {
-			ganzhi: string;
-			parsed: string;
-		};
-	};
-	const result = writable<BaziResponse | null>()
+	const result = writable<Bazi | null>()
 
-	const calculate = async (data: { hour: string, minute: string, day: string, month: string, year: string, gender: string }) => {
+	const calculate = async (data: { hour: number, minute: number, day: number, month: number, year: number, gender: string }) => {
 		loading.set(true)
 		errors.set({
 			hour: "",
@@ -296,7 +279,7 @@ export const useCreateClientMutation = () => {
 		mainError.set("")
 
 		try {
-			await api.post("/client", data);
+			await api.post("/clients", data);
 			toast.success(m.calculator_data_saved_toast());
 		} catch (e: any) {
 			if (e.response?.data?.error || e.response?.data?.detail) {

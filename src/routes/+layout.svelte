@@ -13,29 +13,9 @@
 
 	let { children } = $props();
 
-	type User = {
-		id: number;
-		first_name: string;
-		last_name: string;
-		email: string;
-		phone_number: string;
-	};
-
 	currentSession.set(page.data as any);
 	$effect(() => {
 		currentSession.set(page.data as any);
-	});
-
-	onMount(() => {
-		let interval = setInterval(async () => {
-			try {
-				const res = await api("/user");
-			} catch (e) {
-				console.error("Error fetching user data:", e);
-			}
-		}, 1000 * 60);
-
-		return () => clearInterval(interval);
 	});
 </script>
 

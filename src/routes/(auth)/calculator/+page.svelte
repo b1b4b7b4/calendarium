@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { api } from "$lib";
+	import { api, captureBlock, genders } from "$lib";
 	import { m } from "$lib/paraglide/messages";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
@@ -21,9 +21,8 @@
 	import { useCalculateRequestMutation } from "$lib/hooks.svelte";
 	import { goto } from "$app/navigation";
 	import { localizeHref } from "$lib/paraglide/runtime";
+	import BaziBlock from "$lib/components/BaziBlock.svelte";
 
-	const { mainError, loading, errors, result, calculate } =
-		useCalculateRequestMutation();
 	const today = new Date();
 	const dates = $state({
 		hours: `${String(today.getHours()).padStart(2, "0")}:${String(
@@ -34,8 +33,10 @@
 		years: String(today.getFullYear()),
 	});
 
+	let baziBlockRef: any = $state(null);
+
 	const fields = $state({
-		gender: "Male",
+		gender: 1,
 	});
 </script>
 
@@ -45,36 +46,23 @@
 >
 	<div class="flex flex-col items-center gap-[20px]">
 		<div class="bg-stone-900/20 backdrop-blur-[10px] p-[40px] max-w-[500px]">
-			<form
-				class="bg-stone-300 p-[16px]"
-				onsubmit={async (e) => {
-					e.preventDefault();
-					const [h, m] = dates.hours.split(":");
-					await calculate({
-						hour: h,
-						minute: m,
-						day: dates.days,
-						month: dates.months,
-						year: dates.years,
-						gender: fields.gender,
-					});
-				}}
-			>
+			<div class="bg-stone-300 p-[16px]">
 				<div class="flex justify-between items-center mb-[16px]">
 					<div
 						class="w-96 justify-start text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display']"
 					>
 						{m.calculator_personal_info()}
 					</div>
-					<Button hover c="">
-						<EditIcon />
-					</Button>
+					<!-- <Button hover c=""> -->
+					<!-- 	<EditIcon /> -->
+					<!-- </Button> -->
 				</div>
 
 				<div class="mb-[20px]">
 					<ReasonSelector
-						options={[m.male(), m.female()]}
-						bind:selectedOption={fields.gender}
+						options={genders}
+						bind:selectedOptionId={fields.gender}
+						selectedOptionReason={"Male"}
 					/>
 				</div>
 
@@ -107,86 +95,68 @@
 
 				<div class="flex justify-center mb-[16px] gap-3">
 					<Button
-						disabled={$loading}
-						type="submit"
+						onclick={() => {
+							goto(
+								localizeHref(
+									"/calculator/create?" +
+										new URLSearchParams({
+											hour: dates.hours,
+											day: dates.days,
+											month: dates.months,
+											year: dates.years,
+											gender: fields.gender,
+										} as any).toString(),
+								),
+							);
+						}}
 						hover
 						c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
 					>
-						{#if $loading}
-							Calculating...
-						{:else}
-							Calculate
-						{/if}
+						Create client
 					</Button>
-
-					{#if $result}
-						<Button
-							onclick={() => {
-								goto(
-									localizeHref(
-										"/calculator/create?" +
-											new URLSearchParams({
-												hour: dates.hours,
-												day: dates.days,
-												month: dates.months,
-												year: dates.years,
-												gender: fields.gender,
-											}).toString(),
-									),
-								);
-							}}
-							hover
-							c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
-						>
-							Create client
-						</Button>
-					{/if}
 				</div>
 
-				{#if $mainError}
-					<div
-						transition:slide
-						class="text-red-500 text-base font-normal font-['GT_Eesti_Pro_Display'] text-center mb-[16px]"
-					>
-						{$mainError}
-					</div>
-				{/if}
-
-				<div class="flex justify-center gap-[20px]">
+				<div class="flex justify-center gap-[20px] mt-10">
 					<div
 						class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
 					>
 						{m.calculator_share()}
 					</div>
 
-					<Button hover c=""><ShareIcon /></Button>
-					<Button hover c="">
+					<Button
+						hover
+						c=""
+						onclick={async () => {
+							const { copyToClipboard } = await captureBlock(
+								baziBlockRef,
+								"calendar",
+							);
+							await copyToClipboard();
+						}}><ShareIcon /></Button
+					>
+					<Button
+						hover
+						c=""
+						onclick={async () => {
+							const { downloadImage } = await captureBlock(
+								baziBlockRef,
+								"calendar",
+							);
+							await downloadImage();
+						}}
+					>
 						<FileIcon />
 					</Button>
 				</div>
-			</form>
+			</div>
 		</div>
 
-		{#if $result}
-			<div class="flex gap-2">
-				{#each Object.entries($result) as [key, value], idx (key)}
-					<div
-						in:slide|global={{ delay: 30 * idx }}
-						class="mt-[20px] p-[16px] bg-stone-300"
-					>
-						<div
-							class="text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[8px]"
-						>
-							{value.ganzhi}
-						</div>
-						<div
-							class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
-						>
-							{value.parsed}
-						</div>
-					</div>
-				{/each}
-			</div>
-		{/if}
+		<BaziBlock
+			bind:ref={baziBlockRef}
+			hours={dates.hours}
+			days={dates.days}
+			months={dates.months}
+			years={dates.years}
+		/>
 	</div>
 </section>

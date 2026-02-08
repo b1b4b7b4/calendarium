@@ -6,23 +6,48 @@
 	import ReasonSelector from "./ReasonSelector.svelte";
 	import toast from "svelte-french-toast";
 	import consultation from "$lib/assets/images/consultation.png";
-	import { m } from "$lib/paraglide/messages";
+	import { contact_reason_billing, m } from "$lib/paraglide/messages";
 	import {
 		useCreateConsultationMutation,
 		useReasonsQuery,
 		type Reason,
 	} from "$lib/hooks.svelte";
+	import {
+		contact_reason_general,
+		contact_reason_technical,
+	} from "../../paraglide/messages";
 
 	const { mainError, loading, errors, createConsultation } =
 		useCreateConsultationMutation();
 	const fields = $state({
 		name: "",
 		email: "",
-		reason: 0,
+		reason: "",
 		description: "",
 	});
 
-	const { loading: reasonsLoading, reasons } = useReasonsQuery();
+	const reasons = [
+		{
+			id: 1,
+			reason: m.contact_reason_general(),
+		},
+		{
+			id: 2,
+			reason: m.contact_reason_technical(),
+		},
+		{
+			id: 3,
+			reason: m.contact_reason_billing(),
+		},
+		{
+			id: 4,
+			reason: m.contact_reason_feedback(),
+		},
+		{
+			id: 5,
+			reason: m.contact_reason_other(),
+		},
+	];
 </script>
 
 <section class="bg-stone-300" id="consultation">
@@ -103,16 +128,10 @@
 					>
 						{m.contact_reason_label()}
 					</div>
-					{#if $reasonsLoading}
-						<div
-							class="bg-stone-100 animate-pulse rounded-lg w-full h-[55px]"
-						></div>
-					{:else}
-						<ReasonSelector
-							options={$reasons}
-							bind:selectedOptionId={fields.reason}
-						/>
-					{/if}
+					<ReasonSelector
+						options={reasons}
+						bind:selectedOptionReason={fields.reason}
+					/>
 					{#if $errors.reason}
 						<div
 							transition:slide
@@ -142,6 +161,15 @@
 							class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
 						>
 							{$errors.description}
+						</div>
+					{/if}
+
+					{#if $mainError}
+						<div
+							transition:slide
+							class="text-red-500 text-sm font-['GT_Eesti_Pro_Display'] mt-1"
+						>
+							{$mainError}
 						</div>
 					{/if}
 				</div>

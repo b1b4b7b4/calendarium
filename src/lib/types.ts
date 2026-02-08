@@ -142,3 +142,23 @@ export interface PhotonFeatureCollection {
 	type: "FeatureCollection";
 	features: PhotonFeature[];
 }
+
+
+export type Bazi = {
+	year: {
+		ganzhi: string;
+		parsed: [string, string];
+	};
+	month: {
+		ganzhi: string;
+		parsed: [string, string];
+	};
+	day: {
+		ganzhi: string;
+		parsed: [string, string];
+	};
+	hour: {
+		ganzhi: string;
+		parsed: [string, string];
+	};
+};

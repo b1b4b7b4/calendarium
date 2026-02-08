@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { Menu, MenuSquare } from "@lucide/svelte";
-	import { goto } from "$app/navigation";
+	import { goto, invalidateAll } from "$app/navigation";
 	import {
 		currentSession,
-		removeSession,
 		settingsModal,
 		asideModal,
 		api,
@@ -23,6 +22,7 @@
 	import { fly, fade, slide } from "svelte/transition";
 	import { imask } from "@imask/svelte";
 	import { page } from "$app/state";
+	import axios from "axios";
 
 	const menuItems = [
 		{ name: m.Main(), link: "/" },
@@ -280,11 +280,8 @@
 		<div in:fly|global={{ y: 10, opacity: 0, duration: 200, delay: 80 }}>
 			<Button
 				onclick={async () => {
-					const error = await removeSession();
-					if (error) {
-						toast.error(m.header_logout_error_toast());
-						return;
-					}
+					await api.post("/auth/logout");
+					invalidateAll();
 					settingsModal.set(false);
 				}}
 				hover

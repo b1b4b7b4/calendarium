@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { api } from "$lib";
+	import { api, genders } from "$lib";
 	import { m } from "$lib/paraglide/messages";
 	import ArrowDownIcon from "$lib/assets/ArrowDownIcon.svelte";
 	import ArrowLeftIcon from "$lib/assets/arrowLeftIcon.svelte";
@@ -27,7 +27,7 @@
 		address: "",
 		country: "",
 		remark: "",
-		gender: page.url.searchParams.get("gender") || "",
+		gender: parseInt(page.url.searchParams.get("gender") ?? "1"),
 	});
 
 	const dates = $state({
@@ -49,7 +49,7 @@
 				e.preventDefault();
 				await createClient({
 					...fields,
-					gender: fields.gender.toLowerCase(),
+					gender: fields.gender == 1 ? "male" : "female",
 					date_of_birth: `${dates.years}-${dates.months}-${dates.days}`,
 				});
 			}}
@@ -60,15 +60,17 @@
 				>
 					{m.calculator_personal_info()}
 				</div>
-				<Button hover c="">
-					<EditIcon />
-				</Button>
+				<!-- <Button hover c=""> -->
+				<!-- 	<EditIcon /> -->
+				<!-- </Button> -->
 			</div>
 
 			<div class="mb-[20px]">
 				<ReasonSelector
-					options={[m.male(), m.female()]}
-					bind:selectedOption={fields.gender}
+					options={genders}
+					bind:selectedOptionId={fields.gender}
+					selectedOptionReason={genders.find((x) => x.id === fields.gender)
+						?.reason}
 				/>
 			</div>
 
@@ -171,19 +173,6 @@
 					{$mainError}
 				</div>
 			{/if}
-
-			<div class="flex justify-center gap-[20px]">
-				<div
-					class="text-stone-900 text-base font-normal font-['GT_Eesti_Pro_Display']"
-				>
-					{m.calculator_share()}
-				</div>
-
-				<Button hover c=""><ShareIcon /></Button>
-				<Button hover c="">
-					<FileIcon />
-				</Button>
-			</div>
 		</form>
 	</div>
 </section>
