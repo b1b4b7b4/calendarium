@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		await db.insert(clients).values({
 			name,
 			gender,
-			date_of_birth,
+			date_of_birth: new Date(date_of_birth),
 			country,
 			email,
 			phone_number,
@@ -102,7 +102,7 @@ export const PATCH: RequestHandler = async ({ request, cookies, url }) => {
 		await db.update(clients).set({
 			name,
 			gender,
-			date_of_birth,
+			date_of_birth: new Date(date_of_birth),
 			country,
 			email,
 			phone_number,

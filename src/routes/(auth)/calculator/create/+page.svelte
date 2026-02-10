@@ -47,10 +47,17 @@
 			class="bg-stone-300 p-[16px]"
 			onsubmit={async (e) => {
 				e.preventDefault();
+				const [hour, minute] = dates.hours.split(":");
 				await createClient({
 					...fields,
 					gender: fields.gender == 1 ? "male" : "female",
-					date_of_birth: `${dates.years}-${dates.months}-${dates.days}`,
+					date_of_birth: new Date(
+						Number(dates.years),
+						Number(dates.months) - 1,
+						Number(dates.days),
+						Number(hour),
+						Number(minute),
+					),
 				});
 			}}
 		>

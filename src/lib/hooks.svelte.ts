@@ -6,7 +6,7 @@ import { get, writable, type Writable } from "svelte/store"
 import { localizeHref } from "$lib/paraglide/runtime";
 import toast from "svelte-french-toast";
 import { m, phone_number } from "$lib/paraglide/messages";
-import type { Bazi, Client } from "./types";
+import type { Compasses } from "./server/db/schema";
 
 
 export const useLoginMutation = () => {
@@ -275,7 +275,14 @@ export const useCreateClientMutation = () => {
 	const mainError = writable("")
 
 	const createClient = async (data: {
-
+		name: string;
+		gender: string;
+		date_of_birth: Date;
+		country: string;
+		email: string;
+		phone_number: string;
+		address: string;
+		remark: string;
 	}) => {
 		loading.set(true)
 		errors.set({
@@ -434,3 +441,35 @@ export const useUpdateClientMutation = () => {
 }
 
 
+
+export const useCompassQuery = () => {
+	const compasses = writable<Compasses[]>([])
+	const loading = writable(false)
+	const mainError = writable("")
+
+	async function fetchCompasses() {
+		try {
+			loading.set(true)
+			const res = await api("/compass");
+			await new Promise((r) => setTimeout(r, 2000));
+			compasses.set(res.data.data);
+		} catch (e: any) {
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				mainError.set(e.response.data.error || e.response.data.detail);
+			} else {
+				mainError.set(e.response?.data);
+			}
+		} finally {
+			loading.set(false)
+		}
+	}
+
+	fetchCompasses();
+
+	return {
+		compasses,
+		fetchCompasses,
+		mainError,
+		loading,
+	}
+}

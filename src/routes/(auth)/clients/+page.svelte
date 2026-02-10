@@ -175,9 +175,13 @@
 										<div
 											class="text-orange-500 text-xs font-normal font-['GT_Eesti_Pro_Display'] mb-[3px]"
 										>
-											{new Date(client.date_of_birth).toLocaleDateString(
-												"ru-RU",
-											)}
+											{new Date(client.date_of_birth).toLocaleString("en-US", {
+												year: "numeric",
+												month: "long",
+												day: "numeric",
+												hour: "numeric",
+												minute: "numeric",
+											})}
 										</div>
 										<div
 											class="text-stone-300 text-base font-normal font-['GT_Eesti_Pro_Display']"
@@ -213,6 +217,7 @@
 									),
 								});
 								await fetchClients();
+								goto(page.url.pathname);
 							});
 							areYouSureModalActive.set(true);
 						}}
@@ -285,9 +290,13 @@
 					{@render RowBlock(m.client_email_label(), $selectedClient?.email)}
 					{@render RowBlock(
 						m.client_date_of_birth_label(),
-						new Date($selectedClient?.date_of_birth).toLocaleDateString(
-							"ru-RU",
-						),
+						new Date($selectedClient?.date_of_birth).toLocaleString("en-US", {
+							year: "numeric",
+							month: "long",
+							day: "numeric",
+							hour: "numeric",
+							minute: "numeric",
+						}),
 					)}
 					{@render RowBlock(
 						m.client_phone_label(),

@@ -14,7 +14,6 @@
 	import Button from "$lib/components/Button.svelte";
 	import Map from "$lib/components/Map.svelte";
 	import Switcher from "$lib/components/Switcher.svelte";
-	import type { PhotonFeature, PhotonFeatureCollection } from "$lib/types";
 	import { clsx } from "clsx";
 	import toast from "svelte-french-toast";
 	import { fade, fly, slide } from "svelte/transition";
@@ -22,13 +21,7 @@
 	import { page } from "$app/state";
 	import { innerHeight, innerWidth } from "svelte/reactivity/window";
 	import { onMount } from "svelte";
-
-	const compassItems = [
-		{ label: m.compass_a(), img: compos1 },
-		// { label: "Compass B", img: "https://placehold.co/106x106" },
-		// { label: "Compass C", img: "https://placehold.co/106x106" },
-	];
-	let selectedCompass = $state(0);
+	import { useCompassQuery } from "$lib/hooks.svelte";
 
 	const settingsItems = $state([
 		{
@@ -47,7 +40,7 @@
 
 	let searchState = $state({
 		query: "",
-		results: [] as PhotonFeature[],
+		results: [] as any[],
 		pending: true,
 	});
 
@@ -81,6 +74,15 @@
 		items: [] as any[],
 		error: "",
 	});
+
+	const { compasses, mainError, loading: compassLoading } = useCompassQuery();
+
+	let selectedCompassId = $state(0);
+	const selectedCompass = $derived.by(() => {
+		return $compasses.find((x) => x.id === selectedCompassId);
+	});
+
+	const selectedClient = $derived(page.url.searchParams.get("clientId"));
 
 	onMount(async () => {
 		try {
@@ -206,26 +208,54 @@
 						<div
 							class="text-orange-500 text-xl font-bold font-['GT_Eesti_Pro_Display'] mb-[20px]"
 						>
-							{m.choose_compass()}
+							{m.choose_compass()} (Default)
 						</div>
 
 						<div class="flex gap-[10px]">
-							{#each compassItems as item, idx}
-								<Button
-									onclick={() => (selectedCompass = idx)}
-									hover
-									c={clsx(
-										"w-28 h-28 relative rounded-xl  overflow-hidden p-1",
-										selectedCompass === idx && "ring ring-2 ring-orange-500",
-									)}
-								>
-									<enhanced:img
-										class="w-full h-full left-[4px] rounded-xl pointer-events-none"
-										src={item.img}
-										alt={item.label}
-									/>
-								</Button>
-							{/each}
+							{#if $compassLoading}
+								{#each Array(3) as _, idx (idx)}
+									<div
+										in:slide|global={{
+											duration: 200,
+											delay: idx * 30,
+										}}
+										class={clsx(
+											"w-28 h-28 relative rounded-xl overflow-hidden p-1 animate-pulse bg-stone-400",
+										)}
+									></div>
+								{/each}
+							{:else}
+								{#each $compasses as item, idx (idx)}
+									<div
+										transition:slide|global={{
+											duration: 200,
+											delay: idx * 33,
+										}}
+									>
+										<Button
+											onclick={() => (selectedCompassId = item.id)}
+											hover
+											c={clsx(
+												"w-28 h-28 relative rounded-xl  overflow-hidden p-1",
+												selectedCompassId === item.id &&
+													"ring ring-2 ring-orange-500",
+											)}
+										>
+											<enhanced:img
+												class="w-full h-full left-[4px] rounded-xl pointer-events-none"
+												src={item.src}
+												alt={"compass"}
+											/>
+										</Button>
+									</div>
+								{:else}
+									<div
+										class="w-28 h-28 relative rounded-xl overflow-hidden p-1"
+									>
+										{m.no_results_found()}
+									</div>
+								{/each}
+							{/if}
 						</div>
 					</div>
 
@@ -233,6 +263,7 @@
 
 					<div class="flex justify-center py-[20px]">
 						<Button
+							disabled={!selectedClient}
 							hover
 							c="px-5 py-2.5 bg-orange-500 rounded-[43px] w-fit text-orange-100 text-base font-normal font-['GT_Eesti_Pro_Display'] flex items-center gap-[10px]"
 						>
@@ -331,7 +362,7 @@
 	{/if}
 
 	<div class="flex-1 w-full h-[calc(100svh-100px)] isolate">
-		{#if compassItems[selectedCompass] && settingsItems[0].state}
+		{#if selectedCompass && settingsItems[0].state}
 			<button
 				transition:fly={{ y: 10, duration: 500 }}
 				onmousedown={handleMouseDown}
@@ -343,8 +374,8 @@
 				style="left:{position.x}px; top:{position.y}px; transform:translate(-50%, -50%);"
 			>
 				<enhanced:img
-					src={compassItems[selectedCompass].img}
-					alt={compassItems[selectedCompass].label}
+					src={selectedCompass.src}
+					alt={"selected compass"}
 					class="rounded-xl pointer-events-none select-none user-select-none"
 				/>
 			</button>

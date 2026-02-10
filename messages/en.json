@@ -188,5 +188,6 @@
 	"are_you_sure": "Are you sure?",
 	"yes": "Yes",
 	"no": "No",
-	"this_action_cannot_be_undone": "This action cannot be undone."
+	"this_action_cannot_be_undone": "This action cannot be undone.",
+	"client_date_of_birth_label": "Date of birth"
 }

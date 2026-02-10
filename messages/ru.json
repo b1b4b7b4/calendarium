@@ -176,7 +176,6 @@
 	"short_friday": "Пят",
 	"short_saturday": "Суб",
 	"client_email_label": "Электронная почта клиента",
-	"client_date_of_birth_label": "Дата рождения клиента",
 	"client_phone_label": "Телефон клиента",
 	"client_address_label": "Адрес клиента",
 	"client_country_label": "Страна клиента",
@@ -189,5 +188,6 @@
 	"are_you_sure": "Вы уверены?",
 	"yes": "Да",
 	"no": "Нет",
-	"this_action_cannot_be_undone": "Это действие не может быть отменено."
+	"this_action_cannot_be_undone": "Это действие не может быть отменено.",
+	"client_date_of_birth_label": "Дата рождения клиента"
 }
