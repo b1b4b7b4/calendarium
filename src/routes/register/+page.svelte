@@ -26,6 +26,11 @@
 	<form
 		onsubmit={async (e) => {
 			e.preventDefault();
+			if (fields.password !== fields.confirm_password) {
+				$errors.confirm_password = "Passwords do not match";
+				return;
+			}
+
 			await register(fields);
 		}}
 		class="w-full max-w-[520px] px-5 py-10 bg-stone-900/20 backdrop-blur-[10px]"

@@ -11,10 +11,6 @@
 		useCreateConsultationMutation,
 		type Reason,
 	} from "$lib/hooks.svelte";
-	import {
-		contact_reason_general,
-		contact_reason_technical,
-	} from "../../paraglide/messages";
 
 	const { mainError, loading, errors, createConsultation } =
 		useCreateConsultationMutation();

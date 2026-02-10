@@ -12,6 +12,7 @@
 	import image1 from "$lib/assets/images/bgs/image1.png";
 	import { useForgotPasswordMutation } from "$lib/hooks.svelte";
 	import { writable } from "svelte/store";
+	import { onMount } from "svelte";
 
 	const { mainError, loading, errors, forgotPassword } =
 		useForgotPasswordMutation();
@@ -23,6 +24,16 @@
 		confirm_password: "",
 	});
 	let code = ["", "", "", ""];
+
+	let timeLeft = $state(60);
+	onMount(() => {
+		const interval = setInterval(() => {
+			if (timeLeft > 0) {
+				timeLeft--;
+			}
+		}, 1000);
+		return () => clearInterval(interval);
+	});
 </script>
 
 <section
@@ -141,11 +152,28 @@
 					</div>
 				{/if}
 
-				<div
-					class="text-white text-sm font-normal font-['GT_Eesti_Pro_Display'] mb-[20px]"
-				>
-					{m.forgot_resend_timer()}
-				</div>
+				{#if timeLeft > 0}
+					<div
+						class="text-white text-sm font-normal font-['GT_Eesti_Pro_Display'] mb-[20px]"
+					>
+						{m.forgot_resend_timer({ timeLeft })}
+					</div>
+				{:else}
+					<Button
+						type="button"
+						hover
+						c="text-orange-500 text-sm font-normal font-['GT_Eesti_Pro_Display'] mb-[20px]"
+						onclick={async () => {
+							await forgotPassword(writable(1), {
+								...fields,
+								code: code.join(""),
+							} as any);
+							timeLeft = 60;
+						}}
+					>
+						Send code again
+					</Button>
+				{/if}
 
 				<Button
 					disabled={$loading}

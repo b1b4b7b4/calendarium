@@ -6,6 +6,9 @@ import { z } from "zod";
 import { hash } from "argon2";
 import { validate, errorResponse } from "$lib/server/validation";
 
+//@ts-ignore
+import nodemailer from "nodemailer";
+
 const StepDto = z.object({
 	step: z.number(),
 });
@@ -41,6 +44,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 				}).where(eq(users.id, user[0].id));
 
 				// send email
+				await sendCode(email, code);
 			}
 			return json({ success: true });
 		} else if (step === 2) {
@@ -78,4 +82,28 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
 function generateFourDigitCode() {
 	return Math.floor(Math.random() * 10000).toString().padStart(4, "0");
+}
+
+
+async function sendCode(email: string, code: string) {
+	const transporter = nodemailer.createTransport({
+		host: "smtp.ethereal.email",
+		port: 587,
+		secure: false, // Use true for port 465, false for port 587
+		auth: {
+			user: "maddison53@ethereal.email",
+			pass: "jn7jnAPss4f63QBp6D",
+		},
+	});
+
+	const info = await transporter.sendMail({
+		from: '"Bazi App" <no-reply@bazi.app>',
+		to: `${email}`,
+		subject: "Bazi App - Reset password",
+		text: `Your code is ${code}`,
+		html: `<p>Your code is ${code}</p>`,
+	});
+
+	console.log("Message sent:", info.messageId);
+	console.log("Message sent:", code);
 }

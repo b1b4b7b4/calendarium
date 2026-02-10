@@ -84,7 +84,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 	}
 };
 
-export const PUT: RequestHandler = async ({ request, cookies, url }) => {
+export const PATCH: RequestHandler = async ({ request, cookies, url }) => {
 	try {
 		const userId = cookies.get("jaiz");
 		if (!userId) {

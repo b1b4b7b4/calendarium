@@ -51,7 +51,10 @@
 	};
 
 	const fields = $state({
-		full_name: $currentSession?.user?.full_name ?? "",
+		full_name: [
+			$currentSession?.user?.first_name,
+			$currentSession?.user?.last_name,
+		].join(" "),
 		phone_number: $currentSession?.user?.phone_number ?? "",
 	});
 
@@ -65,7 +68,7 @@
 			};
 
 			const [first_name, ...last_name_parts] = fields.full_name.split(" ");
-			const res = await api.patch(`user/${$currentSession.user?.id}`, {
+			await api.patch("/user", {
 				first_name: first_name,
 				last_name: last_name_parts.join(" "),
 				phone_number: fields.phone_number,
@@ -166,7 +169,7 @@
 
 	<div
 		transition:fly={{ y: 20, duration: 200 }}
-		class="fixed z-101 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-full max-w-96 bg-orange-100 rounded-xl p-[20px] hide-body-scroll max-h-[80vh] overflow-y-auto hide-scrollbar"
+		class="fixed z-101 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-full max-w-96 bg-orange-100 rounded-xl p-[20px] hide-body-scroll max-h-[90vh] overflow-y-auto hide-scrollbar"
 	>
 		<div
 			class="text-stone-900 text-xl font-bold font-['GT_Eesti_Pro_Display'] flex justify-between items-center"

@@ -174,3 +174,7 @@ export async function captureBlock(ref: HTMLElement, filename = 'capture') {
 
 export const areYouSureContinue = writable(() => { })
 export const areYouSureModalActive = writable(false)
+export const areYouSureModalPending = writable(false)
+
+
+

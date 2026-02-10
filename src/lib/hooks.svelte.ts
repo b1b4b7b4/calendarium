@@ -82,14 +82,26 @@ export const useForgotPasswordMutation = () => {
 
 		try {
 			if (get(step) === 1) {
-				await api.post("/user/send_reset_code", data);
+				await api.post("/auth/reset", {
+					step: 1,
+					email: data.email,
+				});
 				toast.success(m.forgot_code_sent_toast());
 				step.set(2);
 			} else if (get(step) === 2) {
-				await api.post("/user/verify_reset_code", data);
+				await api.post("/auth/reset", {
+					step: 2,
+					email: data.email,
+					code: data.code,
+				});
 				step.set(3);
 			} else if (get(step) === 3) {
-				await api.post("/user/set_new_password", data);
+				await api.post("/auth/reset", {
+					step: 3,
+					email: data.email,
+					password: data.password,
+					code: data.code,
+				});
 				goto(localizeHref("/login"));
 			}
 		} catch (e: any) {
@@ -357,3 +369,68 @@ export const useClientsQuery = () => {
 		selectedClient
 	}
 }
+
+
+export const useUpdateClientMutation = () => {
+	const loading = writable(false)
+	const errors = writable({
+		name: "",
+		email: "",
+		phone_number: "",
+		gender: "",
+		date_of_birth: "",
+		address: "",
+		country: "",
+		remark: "",
+	})
+	const mainError = writable("")
+
+	const updateClient = async ({ id, ...data }: {
+		id: number;
+		name: string;
+		gender: string;
+		date_of_birth: Date;
+		country: string;
+		email: string;
+		phone_number: string;
+		address: string;
+		remark: string;
+	}) => {
+		loading.set(true)
+		errors.set({
+			name: "",
+			email: "",
+			phone_number: "",
+			gender: "",
+			date_of_birth: "",
+			address: "",
+			country: "",
+			remark: "",
+		})
+		mainError.set("")
+
+		try {
+			await api.patch("/clients", data, {
+				params: { id }
+			});
+			toast.success(m.calculator_data_saved_toast());
+		} catch (e: any) {
+			if (e.response?.data?.error || e.response?.data?.detail) {
+				mainError.set(e.response.data.error || e.response.data.detail);
+			} else {
+				errors.set(e.response?.data);
+			}
+		} finally {
+			loading.set(false)
+		}
+	}
+
+	return {
+		loading,
+		errors,
+		mainError,
+		updateClient
+	}
+}
+
+

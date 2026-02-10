@@ -119,7 +119,7 @@
 	"forgot_sending_button": "Sending...",
 	"forgot_send_sms_button": "Send SMS",
 	"forgot_verify_email_title": "Confirm email",
-	"forgot_resend_timer": "Resend it after 00:59",
+	"forgot_resend_timer": "Resend it after {timeLeft}",
 	"forgot_send_button": "Send",
 	"forgot_loading_button": "Loading...",
 	"forgot_login_button": "Login",

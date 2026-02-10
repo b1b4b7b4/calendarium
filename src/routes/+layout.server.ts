@@ -11,6 +11,7 @@ export const load: ServerLoad = async ({ cookies }) => {
 			first_name: users.first_name,
 			last_name: users.last_name,
 			email: users.email,
+			phone_number: users.phone_number,
 		}).from(users).where(eq(users.id, Number(token)));
 		if (user.length) {
 			return {

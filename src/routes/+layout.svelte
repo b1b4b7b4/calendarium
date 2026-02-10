@@ -13,6 +13,7 @@
 		api,
 		areYouSureContinue,
 		areYouSureModalActive,
+		areYouSureModalPending,
 		currentSession,
 	} from "$lib";
 	import { fade, fly } from "svelte/transition";
@@ -73,13 +74,20 @@
 				<Button
 					hover
 					c="text-white text-base font-bold font-['GT_Eesti_Pro_Display'] leading-4 w-full max-w-44 px-2.5 bg-orange-500 rounded-xl outline outline-1 outline-offset-[-1px] outline-orange-500 min-h-[47px]"
+					disabled={$areYouSureModalPending}
 					onclick={async () => {
+						areYouSureModalPending.set(true);
 						await $areYouSureContinue();
 						areYouSureModalActive.set(false);
+						areYouSureModalPending.set(false);
 						areYouSureContinue.set(() => {});
 					}}
 				>
-					{m.yes()}
+					{#if $areYouSureModalPending}
+						{m.loading()}
+					{:else}
+						{m.yes()}
+					{/if}
 				</Button>
 				<Button
 					hover
