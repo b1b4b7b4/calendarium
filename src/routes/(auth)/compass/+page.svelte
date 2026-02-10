@@ -48,8 +48,21 @@
 		x: (innerWidth?.current ?? 1920) / 2,
 		y: (innerHeight?.current ?? 1080) / 2,
 	});
+	let rotation = $state(0);
+	let scale = $state(1);
+	const baseSize = 500;
+	const minScale = 0.3;
+	const maxScale = 2;
+
 	let isDragging = $state(false);
+	let isRotating = $state(false);
+	let isResizing = $state(false);
 	let dragOffset = $state({ x: 0, y: 0 });
+	let startAngle = $state(0);
+	let startRotation = $state(0);
+	let startScale = $state(1);
+	let startDistance = $state(0);
+
 	function handleMouseDown(e: MouseEvent) {
 		if (!settingsItems[1].state) return;
 		isDragging = true;
@@ -67,6 +80,63 @@
 		isDragging = false;
 		window.removeEventListener("mousemove", handleMouseMove);
 		window.removeEventListener("mouseup", handleMouseUp);
+	}
+
+	function getAngleFromCenter(e: MouseEvent) {
+		const dx = e.clientX - position.x;
+		const dy = e.clientY - position.y;
+		return Math.atan2(dy, dx) * (180 / Math.PI);
+	}
+
+	function getDistanceFromCenter(e: MouseEvent) {
+		const dx = e.clientX - position.x;
+		const dy = e.clientY - position.y;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	function handleRotateStart(e: MouseEvent) {
+		if (!settingsItems[1].state) return;
+		e.stopPropagation();
+		isRotating = true;
+		startAngle = getAngleFromCenter(e);
+		startRotation = rotation;
+		window.addEventListener("mousemove", handleRotateMove);
+		window.addEventListener("mouseup", handleRotateEnd);
+	}
+
+	function handleRotateMove(e: MouseEvent) {
+		if (!isRotating) return;
+		const currentAngle = getAngleFromCenter(e);
+		rotation = startRotation + (currentAngle - startAngle);
+	}
+
+	function handleRotateEnd() {
+		isRotating = false;
+		window.removeEventListener("mousemove", handleRotateMove);
+		window.removeEventListener("mouseup", handleRotateEnd);
+	}
+
+	function handleResizeStart(e: MouseEvent) {
+		if (!settingsItems[1].state) return;
+		e.stopPropagation();
+		isResizing = true;
+		startDistance = getDistanceFromCenter(e);
+		startScale = scale;
+		window.addEventListener("mousemove", handleResizeMove);
+		window.addEventListener("mouseup", handleResizeEnd);
+	}
+
+	function handleResizeMove(e: MouseEvent) {
+		if (!isResizing) return;
+		const currentDistance = getDistanceFromCenter(e);
+		const newScale = startScale * (currentDistance / startDistance);
+		scale = Math.max(minScale, Math.min(maxScale, newScale));
+	}
+
+	function handleResizeEnd() {
+		isResizing = false;
+		window.removeEventListener("mousemove", handleResizeMove);
+		window.removeEventListener("mouseup", handleResizeEnd);
 	}
 
 	const composiState = $state({
@@ -363,22 +433,72 @@
 
 	<div class="flex-1 w-full h-[calc(100svh-100px)] isolate">
 		{#if selectedCompass && settingsItems[0].state}
-			<button
+			<div
 				transition:fly={{ y: 10, duration: 500 }}
-				onmousedown={handleMouseDown}
 				class={clsx(
 					"fixed z-500",
 					!settingsItems[1].state && "pointer-events-none",
-					"w-[500px] h-[500px]",
 				)}
-				style="left:{position.x}px; top:{position.y}px; transform:translate(-50%, -50%);"
+				style="left:{position.x}px; top:{position.y}px; transform:translate(-50%, -50%) rotate({rotation}deg); width:{baseSize *
+					scale}px; height:{baseSize * scale}px;"
 			>
-				<enhanced:img
-					src={selectedCompass.src}
-					alt={"selected compass"}
-					class="rounded-xl pointer-events-none select-none user-select-none"
-				/>
-			</button>
+				<!-- Main compass image - draggable -->
+				<button onmousedown={handleMouseDown} class="w-full h-full cursor-move">
+					<enhanced:img
+						src={selectedCompass.src}
+						alt={"selected compass"}
+						class="w-full h-full rounded-xl pointer-events-none select-none user-select-none"
+					/>
+				</button>
+
+				<!-- Corner handles (visible only when interaction is enabled) -->
+				{#if settingsItems[1].state}
+					<!-- Resize handles (corners) -->
+					<button
+						onmousedown={handleResizeStart}
+						class="absolute -top-2 -left-2 w-4 h-4 bg-orange-500 rounded-full cursor-nwse-resize hover:bg-orange-600 transition-colors"
+						title="Resize"
+					></button>
+					<button
+						onmousedown={handleResizeStart}
+						class="absolute -top-2 -right-2 w-4 h-4 bg-orange-500 rounded-full cursor-nesw-resize hover:bg-orange-600 transition-colors"
+						title="Resize"
+					></button>
+					<button
+						onmousedown={handleResizeStart}
+						class="absolute -bottom-2 -left-2 w-4 h-4 bg-orange-500 rounded-full cursor-nesw-resize hover:bg-orange-600 transition-colors"
+						title="Resize"
+					></button>
+					<button
+						onmousedown={handleResizeStart}
+						class="absolute -bottom-2 -right-2 w-4 h-4 bg-orange-500 rounded-full cursor-nwse-resize hover:bg-orange-600 transition-colors"
+						title="Resize"
+					></button>
+
+					<!-- Rotate handle (top center) -->
+					<button
+						onmousedown={handleRotateStart}
+						class="absolute -top-8 left-1/2 -translate-x-1/2 w-5 h-5 bg-blue-500 rounded-full cursor-grab hover:bg-blue-600 transition-colors flex items-center justify-center"
+						title="Rotate"
+					>
+						<svg
+							class="w-3 h-3 text-white"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<path
+								d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+							/>
+						</svg>
+					</button>
+					<!-- Line connecting rotate handle to compass -->
+					<div
+						class="absolute -top-6 left-1/2 w-0.5 h-4 bg-blue-500 -translate-x-1/2"
+					></div>
+				{/if}
+			</div>
 		{/if}
 
 		<Map />
